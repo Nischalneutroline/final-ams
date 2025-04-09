@@ -60,7 +60,11 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   try {
     // get all services
-    const services = await prisma.service.findMany()
+    const services = await prisma.service.findMany({
+      include: {
+        appointments: true
+      }
+    })
 
     if (services.length === 0) {
       return NextResponse.json({ error: "No services found" }, { status: 404 })

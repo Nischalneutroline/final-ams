@@ -17,6 +17,9 @@ export async function POST(req: NextRequest) {
         title: parsedData.title,
         description: parsedData.description,
         message: parsedData.message,
+        send24hr: parsedData.send24hr,
+        send48hr: parsedData.send48hr,
+        send1hr: parsedData.send1hr,
         services: {
           connect: parsedData.services.map((service) => ({ id: service })), // Connect existing services
         },
@@ -103,6 +106,9 @@ export async function PUT(req: NextRequest) {
         title: parsedData.title,
         description: parsedData.description,
         message: parsedData.message,
+        send24hr: parsedData.send24hr,
+        send48hr: parsedData.send48hr,
+        send1hr: parsedData.send1hr,
         services: {
           connect: parsedData.services.map((service) => ({ id: service })), // Connect existing services
         },
@@ -115,7 +121,7 @@ export async function PUT(req: NextRequest) {
         },
         reminderOffset: {
           upsert: parsedData.reminderOffset.map((reminderOffset) => ({
-            where: { id: Number(reminderOffset.id) }, // If ID exists, update, otherwise create
+            where: { id: reminderOffset.id }, // If ID exists, update, otherwise create
             update: {
               sendOffset: reminderOffset.sendOffset,
               scheduledAt: new Date(reminderOffset.scheduledAt),

@@ -112,6 +112,7 @@ enum ReminderType {
   CUSTOM // Flexible (could be before or after, defined by admin)
 }
 
+
 enum NotificationMethod {
   SMS
   EMAIL
@@ -129,6 +130,9 @@ model Reminder {
   services       Service[] // Relationship to reminders
   notifications  Notification[] // can have or or more notification way
   reminderOffset ReminderOffset[] // can have one or more offset: time for sending 
+  send24hr       Boolean        @default(false)
+  send48hr       Boolean        @default(false)
+  send1hr        Boolean        @default(false)
 }
 
 model ReminderOffset {

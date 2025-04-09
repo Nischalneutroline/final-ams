@@ -37,4 +37,7 @@ export const ReminderSchema = z.object({
   services: z.array(z.string()).min(1, "At least one service is required"), // List of service IDs
   notifications: z.array(NotificationSchema), // List of notifications
   reminderOffset: z.array(ReminderOffsetSchema), // List of reminder offsets
+  send24hr: z.boolean(),
+  send48hr: z.boolean(), 
+  send1hr: z.boolean(),
 })

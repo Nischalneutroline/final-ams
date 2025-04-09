@@ -8,93 +8,125 @@ export const cronReminder = inngestClient.createFunction(
     name: "Send Reminder (CRON)",
   },
   {
-   /*  cron: "0 * * * *", */ // every 1 hr
-    cron: "* * * * *"
+    /*  cron: "0 * * * *", */ // every 1 hr
+    cron: "* * * * *",
   },
   async ({ step }) => {
-    // Step 1: Fetch all reminders with relations
-    /*    const reminders = await step.run("fetch-reminders", async () => {
-      return await prisma.reminder.findMany({
-        include: {
-          services: true,
-          notifications: true,
-          reminderOffset: true,
+    // Step 1: Fetch all reminders
+    const reminders = await prisma.reminder.findMany({
+      include: {
+        services: {
+          include: {
+            appointments: true,
+          },
         },
-      });
+        notifications: true,
+        reminderOffset: true,
+      },
     });
- */
+    //to do - fetch reminder
+    //4 functions for reminder, followup,missed and cancellation
+    //check appointment for each 
 
     //perform db relations with user to fetch the email and name
-    const reminders: any[] = [
-      {
-        send48hr: "scheduled",
-        send24Hr: "scheduled",
-        send1Hr: "scheduled",
-        sendOffset: "2880",
-        scheduledAt: "2025-04-10T13:34:56.789Z",
-        email: "jack.2smith45@gmail.com",
-        name: "Jack Smith"
-      },
-      {
-        send48hr: "scheduled",
-        send24Hr: "scheduled",
-        send1Hr: "scheduled",
-        sendOffset: "1440",
-        scheduledAt: "2025-04-09T09:34:56.789Z",
-        email: "sarahdoe982@gmail.com",
-         name: "Sarah Doe"
-      },
-    ];
 
     await step.run("process-reminders", async () => {
       // Get the current time
       const now = new Date();
 
       for (const reminder of reminders) {
-        const scheduledAt = new Date(reminder.scheduledAt);
+        let shouldUpdate = false;
 
-        // Calculate the difference in milliseconds
-        const diffInMilliseconds = scheduledAt.getTime() - now.getTime();
+        // Loop through each reminder's offsets and check scheduledAt
+        for (const offset of reminder.reminderOffset) {
+          for (const service of reminder.services) {
+            for (const appointment of service.appointments) {
+              const scheduledAt = new Date(offset.scheduledAt);
 
-        // Convert milliseconds to minutes
-        const diffInMinutes = diffInMilliseconds / 1000 / 60;
+              // Calculate the difference in milliseconds
+              const diffInMilliseconds = scheduledAt.getTime() - now.getTime(); //send before and after check
 
-        console.log(`Time difference for reminder: ${diffInMinutes} minutes`);
+              // Convert milliseconds to minutes
+              const diffInMinutes = diffInMilliseconds / 1000 / 60;
 
-        // Compare with 48 hours (2880 minutes), 24 hours (1440 minutes), and 1 hour (60 minutes)
-        if (diffInMinutes <= 105 && diffInMinutes > 1 && reminder.send1Hr === "scheduled") {
-          console.log("Around 1-hour left for appointment ...");
-          
-          //send email
-          await sendReminderEmail(reminder.email, reminder.name, reminder.sendOffset)
+              console.log(
+                `Time difference for reminder: ${diffInMinutes} minutes`
+              );
+             
+              // Compare with 48 hours (2880 minutes), 24 hours (1440 minutes), and 1 hour (60 minutes)
+              if (
+                diffInMinutes <= 105 &&
+                diffInMinutes > 1 &&
+                reminder.send1hr === false
+              ) {
+                console.log(
+                  "Around 1-hour left for appointment ...",
+                );
 
-          // Send reminder for 48 hours
-          reminder.send1Hr = "sent"; // Update the status to sent in db for send1hr
-        } else if (
-          diffInMinutes <= 36 * 60 &&
-          diffInMinutes > 12 * 60 &&
-          reminder.send24Hr === "scheduled"
-        ) {
-          console.log("Around 24-hour left for appointment ...");
+                //send email
+                  await sendReminderEmail(
+                  appointment.email,
+                  appointment.customerName,
+                  /* offset.sendOffset */ 1
+                );
 
-          await sendReminderEmail(reminder.email, reminder.name, reminder.sendOffset)
-          // Send reminder for 24 hours
-          reminder.send24Hr = "sent"; // Update the status to sent in db for send24hr
-        } else if (
-          diffInMinutes <= 56 * 60 &&
-          diffInMinutes > 36 * 60 &&
-          reminder.send48hr === "scheduled"
-        ) {
-          console.log("Around 48-hour left for appointment ...");
-           //send email
-           await sendReminderEmail(reminder.email, reminder.name, reminder.sendOffset)
+                // Send reminder for 48 hours
+                reminder.send1hr = true; // Update the status to sent in db for send1hr
+                shouldUpdate = true;
+              } else if (
+                diffInMinutes <= 36 * 60 &&
+                diffInMinutes > 12 * 60 &&
+                reminder.send24hr === false
+              ) {
+                console.log(
+                  "Around 24-hour left for appointment ...",
+                );
 
-          // Send reminder for 1 hour
-          reminder.send48hr = "sent"; // Update the status to sent in db for send48hr
+                  await sendReminderEmail(
+                  appointment.email,
+                  appointment.customerName,
+                  /* offset.sendOffset */ 24
+                );
+
+                // Send reminder for 24 hours
+                reminder.send24hr = true; // Update the status to sent in db for send24hr
+                shouldUpdate = true;
+              } else if (
+                diffInMinutes <= 56 * 60 &&
+                diffInMinutes > 36 * 60 &&
+                reminder.send48hr === false
+              ) {
+                console.log(
+                  "Around 48-hour left for appointment ...",
+                );
+
+                //send email
+                  await sendReminderEmail(
+                  appointment.email,
+                  appointment.customerName,
+                  /* offset.sendOffset */ 48
+                );
+
+                // Send reminder for 1 hour
+                reminder.send48hr = true; // Update the status to sent in db for send48hr
+                shouldUpdate = true;
+              }
+            }
+          }
         }
+          // Save to DB if any flag changed
+          if (shouldUpdate) {
+            await prisma.reminder.update({
+              where: { id: reminder.id },
+              data: {
+                send1hr: reminder.send1hr,
+                send24hr: reminder.send24hr,
+                send48hr: reminder.send48hr,
+              },
+            });
+          }
+          return "Reminders processed successfully";
       }
-      console.log('reminder',reminders);
-     return reminders;
     });
   }
 );

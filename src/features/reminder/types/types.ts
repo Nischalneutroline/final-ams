@@ -37,6 +37,9 @@ export interface Reminder {
   services: string[]; // List of service IDs associated with the reminder
   notifications: Notification[]; // List of notifications for the reminder
   reminderOffset: ReminderOffset[]; // List of offsets to define when reminders are sent
+  send24hr: boolean; 
+  send48hr: boolean; 
+  send1hr: boolean;
 }
-//add field of OneHr, TwentyFourHr, fortyEighthr 
+
 

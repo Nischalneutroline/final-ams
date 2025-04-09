@@ -2,29 +2,11 @@ import nodemailer from 'nodemailer';
 import { NextRequest, NextResponse } from "next/server";
  
 
-// Configure the Nodemailer transporter
- function createTransporter() {
-  const emailUser = process.env.SMTP_EMAIL;
-  const emailPassword = process.env.SMTP_PASS;
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port:587,
-    secure: false,
-    auth: {
-      user: emailUser,
-      pass:emailPassword,
-    },
-  });
-  return transporter;
-}
-
-
 //option for the mail to be sent
-function mailOptions(email: string, name: string, sendOffset: string) {
-  const sendOffsetInMinutes = Number(sendOffset);
+function mailOptions(email: string, name: string, sendOffset: number) {
 
   // Divide by 60 to convert to hours
-  const hoursLeft = sendOffsetInMinutes / 60;
+ /*  const hoursLeft = sendOffset / 60; */
   return {
     from: `"Neutroline Support" <${process.env.SMTP_EMAIL}>`, // Sender's emai3l address
     to: email, // Recipient's email address
@@ -44,7 +26,7 @@ function mailOptions(email: string, name: string, sendOffset: string) {
             </div>
             <div style="padding: 0 5% 1%;font-size: 1.1rem;letter-spacing: 0.5px;">
             <p>Dear ${name},</p>
-            <p>You have around ${hoursLeft} left for the appointment.</p>
+            <p>You have around ${sendOffset} left for the appointment.</p>
             
             <p>Thank You,<br/>
                 Team<br/>
@@ -59,9 +41,19 @@ function mailOptions(email: string, name: string, sendOffset: string) {
 
 
 
-export async function sendReminderEmail(email: string,name: string,sendOffset: string) {
+export async function sendReminderEmail(email: string,name: string,sendOffset: number) {
+  const emailUser = process.env.SMTP_EMAIL;
+  const emailPassword = process.env.SMTP_PASS;
 
-  const transporter = createTransporter();
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT),
+    secure: false,
+    auth: {
+      user: emailUser,
+      pass:emailPassword,
+    },
+  });
 
   const options = mailOptions(email, name, sendOffset);
  
