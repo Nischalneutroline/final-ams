@@ -1,0 +1,427 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -------- MODELS
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  password   String
+  name       String
+  phone      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lastActive DateTime @default(now())
+  role       Role     @default(USER)
+  isActive   Boolean  @default(true)
+
+  appointments  Appointment[] @relation("BookedUser") // Appointments made by this user
+  bookings      Appointment[] @relation("BookedBy") // Appointments booked by this user for others
+  adminBookings Appointment[] @relation("CreatedBy")
+
+  address Address? // One-to-One Relation (Handled by Address model)
+
+  FAQ    FAQ[]
+  Ticket Ticket[]
+}
+
+model Address {
+  id      Int    @id @default(autoincrement())
+  street  String
+  city    String
+  country String
+  zipCode String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String @unique // Foreign key linking to User
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+// --------- Service
+
+model Service {
+  id                  String                @id @default(cuid())
+  title               String
+  description         String
+  createdAt           DateTime              @default(now())
+  status              Status                @default(ACTIVE)
+  estimatedDuration   Int // Store duration in minutes (e.g., 60 for 1 hour)
+  serviceAvailability ServiceAvailability[]
+  appointments        Appointment[] // select all the appointments for reminders
+  eminders            Reminder[]
+  resources           Resource[]
+
+  BusinessDetail   BusinessDetail? @relation(fields: [businessDetailId], references: [id])
+  businessDetailId String?
+}
+
+model ServiceAvailability {
+  id        String        @id @default(cuid())
+  service   Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId String
+  weekDay   WeekDays
+  timeSlots ServiceTime[]
+}
+
+model ServiceTime {
+  id                    String              @id @default(cuid())
+  serviceAvailability   ServiceAvailability @relation(fields: [serviceAvailabilityId], references: [id], onDelete: Cascade)
+  serviceAvailabilityId String
+  startTime             DateTime
+  endTime               DateTime
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum WeekDays {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+// -------- Notification & Reminders
+
+enum ReminderType {
+  REMINDER // Reminder before appointment
+  FOLLOW_UP // After appointment (e.g., feedback, check-in)
+  CANCELLATION // After appointment (e.g., cancellation confirmation)
+  MISSED // After appointment (e.g., missed appointment)
+  CUSTOM // Flexible (could be before or after, defined by admin)
+}
+
+enum NotificationMethod {
+  SMS
+  EMAIL
+  PUSH
+}
+
+model Reminder {
+  id          String       @id @default(cuid())
+  type        ReminderType // Types: Reminder, Follow-up, Cancellation, etc.
+  title       String
+  description String?
+  message     String? // Custom message
+
+  // Relation to the reminder for all the services to send 
+  services       Service[] // Relationship to reminders
+  notifications  Notification[] // can have or or more notification way
+  reminderOffset ReminderOffset[] // can have one or more offset: time for sending 
+}
+
+
+model ReminderOffset {
+  id          String   @id @default(cuid())
+  sendOffset  Int // The offset in minutes (e.g., 2880 for 48 hours)
+  scheduledAt DateTime // The actual time for this reminder
+  sendBefore  Boolean // True for reminders before the appointment, false for after
+  reminder    Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+  reminderId  String
+}
+
+model Notification {
+  id         String             @id @default(cuid())
+  method     NotificationMethod // Method of notification (SMS, EMAIL, PUSH)
+  reminderId String
+  reminder   Reminder           @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+}
+
+// ------ Appointments
+model Appointment {
+  // Essential Details of booked customer
+  id           String            @id @default(cuid())
+  customerName String // Required field for the person being booked
+  email        String // Required email of the person being booked
+  phone        String // Required phone number of the person being booked
+  status       AppointmentStatus @default(SCHEDULED) // Required Appointment Scheduled 
+
+  // To map which user is or if they booked for others
+  userId String? // User ID if the logged-in user is booking for themselves
+  user   User?   @relation("BookedUser", fields: [userId], references: [id]) // Relates to logged-in user for self-booking
+
+  bookedById String? // Tracks the user who booked the appointment for someone else
+  bookedBy   User?   @relation("BookedBy", fields: [bookedById], references: [id]) // Relates to the user who made the booking
+
+  // To track which service is they booked for
+  service      Service  @relation(fields: [serviceId], references: [id])
+  serviceId    String
+  selectedDate DateTime // Selected date for the appointment
+  selectedTime DateTime // Selected time for the appointment
+
+  // If any message
+  message String? // Optional message from the user
+
+  // If they booked for themselves or others
+  isForSelf Boolean @default(true) // Indicates if the appointment is for the logged-in user or someone else
+
+  // Who booked it: User or Admin
+  createdBy   User   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById String // User/Admin ID who booked the appointment (either for themselves or someone else)
+
+  // Date for when it is created or updated
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Resource   Resource? @relation(fields: [resourceId], references: [id])
+  resourceId String?
+}
+
+// Appointment Status 
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  MISSED
+  CANCELLED
+  FOLLOW_UP
+}
+
+// -------- Announcement 
+
+model AnnouncementOrOffer {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  message     String? // Custom message 
+
+  // Target Audience
+  audience    TargetAudience
+  isImmediate Boolean        @default(true)
+  scheduledAt DateTime
+  showOn      Showon
+
+  // Additional logic to handle expiration duration or "never"
+  expiredAt ExpirationDuration @default(THIRTY_DAYS)
+  // This field helps calculate the expiration time based on the selected option (1 day, 3 days, etc.)
+
+  createdAt DateTime @default(now())
+}
+
+enum Showon {
+  BANNER
+  PUSH
+  EMAIL
+  ALL
+}
+
+enum TargetAudience {
+  ALL
+  APPOINTED_USERS
+  CANCELLED_USERS
+}
+
+enum ExpirationDuration {
+  ONE_DAY
+  THREE_DAYS
+  SEVEN_DAYS
+  THIRTY_DAYS
+  NEVER
+}
+
+// Business Details
+model BusinessDetail {
+  id                         String            @id @default(cuid())
+  name                       String
+  industry                   String
+  email                      String            @unique
+  phone                      String
+  website                    String?
+  address                    BusinessAddress[] // Business can have multiple branches
+  businessRegistrationNumber String
+  status                     BusinessStatus    @default(PENDING) // Once everything is reviewd than do active
+
+  // Working days
+  businessAvailability BusinessAvailability[]
+  holiday              Holiday[]
+
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  supportBusinessDetail SupportBusinessDetail?
+  resources             Resource[]
+  services              Service[]
+}
+
+model BusinessAddress {
+  id         String                 @id @default(cuid())
+  street     String
+  city       String
+  country    String
+  zipCode    String
+  googleMap  String
+  business   BusinessDetail?        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId String?
+  support    SupportBusinessDetail? @relation(fields: [supportId], references: [id], onDelete: Cascade)
+  supportId  String?
+}
+
+// Can also be helpful for support avaiability
+model BusinessAvailability {
+  id                      String                 @id @default(cuid())
+  business                BusinessDetail?        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId              String?
+  weekDay                 WeekDays
+  type                    AvailabilityType       @default(GENERAL) // Add this to distinguish between general and support hours
+  timeSlots               BusinessTime[]
+  SupportBusinessDetail   SupportBusinessDetail? @relation(fields: [supportBusinessDetailId], references: [id], onDelete: Cascade)
+  supportBusinessDetailId String?
+}
+
+enum AvailabilityType {
+  GENERAL
+  SUPPORT
+}
+
+model BusinessTime {
+  id                     String               @id @default(cuid())
+  businessAvailability   BusinessAvailability @relation(fields: [businessAvailabilityId], references: [id], onDelete: Cascade)
+  businessAvailabilityId String
+  startTime              DateTime
+  endTime                DateTime
+}
+
+// Can also be used for support holiday
+model Holiday {
+  id                      String                 @id @default(cuid())
+  business                BusinessDetail?        @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId              String?
+  holiday                 WeekDays
+  type                    HolidayType            @default(GENERAL) // Differentiates between general business and support holidays
+  date                    DateTime?
+  SupportBusinessDetail   SupportBusinessDetail? @relation(fields: [supportBusinessDetailId], references: [id])
+  supportBusinessDetailId String?
+}
+
+enum HolidayType {
+  GENERAL
+  SUPPORT
+}
+
+enum BusinessStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+}
+
+// ------- Support and Help
+model SupportBusinessDetail {
+  id                  String                 @id @default(cuid())
+  supportBusinessName String
+  supportEmail        String                 @unique
+  supportPhone        String
+  supportGoogleMap    String?
+  supportAvailability BusinessAvailability[] // Separate business availability for support
+  supportHoliday      Holiday[] // Holiday for support team (if different from general business holidays)
+  supportAddress      BusinessAddress[]
+
+  business   BusinessDetail @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId String         @unique // Link to the main business
+}
+
+//----- FAQ
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String // The question text
+  answer    String // The answer text
+  category  String? // Optional category to group FAQs (e.g., General, Billing)
+  isActive  Boolean  @default(true) // To indicate if the FAQ is visible on the website
+  order     Int? // Optional field for ordering the FAQ in a specific order
+  createdAt DateTime @default(now()) // The timestamp when the FAQ is created
+  updatedAt DateTime @updatedAt // Timestamp for when the FAQ was last updated
+
+  // last updator
+  lastUpdatedById String
+
+  // FAQ creator
+  User        User   @relation(fields: [createdById], references: [id])
+  createdById String
+}
+
+// -- Ticket
+model Ticket {
+  id                String       @id @default(cuid()) // Unique ID for the ticket
+  userType          Role // Can be "Customer" or "Admin"
+  subject           String // Subject or title of the ticket
+  ticketDescription String // Detailed description of the issue or request
+  category          String // Type of issue (e.g., Technical Support, Billing)
+  priority          Priority     @default(MEDIUM) // Priority level (Low, Medium, High)
+  status            TicketStatus @default(OPEN) // Status (Open, In Progress, Resolved, Closed)
+
+  createdAt             DateTime @default(now()) // Timestamp when the ticket is created
+  updatedAt             DateTime @updatedAt // Timestamp for the last update
+  assignedTo            String? // The support agent/admin assigned to resolve the ticket
+  resolutionDescription String? // Description of how the issue was resolved (if applicable)
+  proofFiles            String? // Path/URL to proof files (screenshots, documents, etc.)
+
+  initiatedById String? // Foreign key for the user who initiated the ticket either admin or user, self
+
+  userId String // User who the ticket is created for
+  user   User   @relation(fields: [userId], references: [id]) // User who the ticket is created for
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+// Enum for Ticket Categories
+enum TicketCategory {
+  TECHNICAL // For all technical issues, bugs, feature requests, etc.
+  BILLING // For any issues related to payment, invoices, subscriptions, refunds, etc.
+  ACCOUNT // For account-related issues like login, profile management, or account access.
+  GENERAL // For general inquiries, customer service requests, or questions.
+  SUPPORT // For customer support related issues that don't fit into the above categories.
+  SECURITY // For issues related to security, account breaches, data protection, etc.
+  MAINTENANCE // For problems arising due to ongoing maintenance, outages, etc.
+  FEEDBACK // For submitting feedback or suggestions for improvement.
+}
+
+// -------- Resources
+
+model Resource {
+  id         String         @id @default(cuid())
+  name       String // Name of the staff (e.g., Doctor, Barber, Stylist)
+  email      String         @unique
+  phone      String
+  role       String // Role of the staff (e.g., Doctor, Barber, Stylist)
+  address    String?
+  businessId String // Reference to the business this staff belongs to
+  business   BusinessDetail @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  services Service[] // Relationship to services provided by the staff
+
+  appointments Appointment[] // Appointments this staff assignes/handles
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
