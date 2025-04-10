@@ -45,7 +45,8 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error("Error in POST /api/reminder:", error)
+
+    console.error("Error in POST /api/reminder:", error);
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: "Validation failed", details: error.errors },
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
 // Fetch all reminders
 export async function GET() {
   try {
-    const reminders = await prisma.reminder.findMany({})
+    const reminders = await prisma.reminder.findMany()
 
     if (reminders.length === 0) {
       return NextResponse.json({ error: "No reminders found" }, { status: 404 })

@@ -131,7 +131,6 @@ model Reminder {
   reminderOffset ReminderOffset[] // can have one or more offset: time for sending 
 }
 
-
 model ReminderOffset {
   id          String   @id @default(cuid())
   sendOffset  Int // The offset in minutes (e.g., 2880 for 48 hours)
