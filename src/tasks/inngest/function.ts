@@ -1,100 +1,204 @@
-import { inngestClient } from "@/tasks/inngest/client";
-import { prisma } from "@/lib/prisma";
-import { sendReminderEmail } from "../email/email";
+import { inngestClient } from "@/tasks/inngest/client"
+import { prisma } from "@/lib/prisma"
+import { sendReminderEmail } from "../email/email"
 
-export const cronReminder = inngestClient.createFunction(
+export const appointmentReminder = inngestClient.createFunction(
   {
-    id: "cron-reminder",
-    name: "Send Reminder (CRON)",
+    id: "appointment-reminder",
+    name: "Send Appointment Reminders",
   },
   {
-   /*  cron: "0 * * * *", */ // every 1 hr
-    cron: "* * * * *"
+    cron: "*/15 * * * *", // Every 15 minutes
   },
   async ({ step }) => {
-    // Step 1: Fetch all reminders with relations
-    /*    const reminders = await step.run("fetch-reminders", async () => {
-      return await prisma.reminder.findMany({
-        include: {
-          services: true,
-          notifications: true,
-          reminderOffset: true,
+    // Step 1: Fetch relevant appointments
+    const appointments = await step.run("fetch-appointments", async () => {
+      const now = new Date()
+      return await prisma.appointment.findMany({
+        where: {
+          OR: [
+            { status: "SCHEDULED" }, // For REMINDER, CUSTOM (before)
+            { status: "COMPLETED" }, // For FOLLOW_UP
+            { status: "CANCELLED" }, // For CANCELLATION
+            { status: "MISSED" }, // For MISSED
+          ],
         },
-      });
-    });
- */
+        include: {
+          service: {
+            include: {
+              reminders: {
+                include: {
+                  reminderOffset: true,
+                  notifications: true,
+                },
+              },
+            },
+          },
+          user: true,
+        },
+      })
+    })
 
-    //perform db relations with user to fetch the email and name
-    const reminders: any[] = [
-      {
-        send48hr: "scheduled",
-        send24Hr: "scheduled",
-        send1Hr: "scheduled",
-        sendOffset: "2880",
-        scheduledAt: "2025-04-10T13:34:56.789Z",
-        email: "jack.2smith45@gmail.com",
-        name: "Jack Smith"
-      },
-      {
-        send48hr: "scheduled",
-        send24Hr: "scheduled",
-        send1Hr: "scheduled",
-        sendOffset: "1440",
-        scheduledAt: "2025-04-09T09:34:56.789Z",
-        email: "sarahdoe982@gmail.com",
-         name: "Sarah Doe"
-      },
-    ];
-
+    // Step 2: Process reminders
     await step.run("process-reminders", async () => {
-      // Get the current time
-      const now = new Date();
+      // Get current time
+      const now = new Date()
 
-      for (const reminder of reminders) {
-        const scheduledAt = new Date(reminder.scheduledAt);
+      // Process each appointment to get appointment, email, and name
+      for (const appointment of appointments) {
+        // time of the appointment
+        const appointmentTime = new Date(appointment.selectedDate)
+        // target email and name
+        const targetEmail =
+          appointment.isForSelf && appointment.user?.email
+            ? appointment.user.email
+            : appointment.email
+        const targetName = appointment.customerName
 
-        // Calculate the difference in milliseconds
-        const diffInMilliseconds = scheduledAt.getTime() - now.getTime();
+        // Update scheduledAt for each offset based on appointment time
+        // This updates all the reminder's scheduledAt based onthe offset default value: 48, 24, 1 hours
+        for (const reminder of appointment.service.reminders) {
+          // Update scheduledAt for each offset
+          for (const offset of reminder.reminderOffset) {
+            // Calculate reminder's scheduledAt based on offset and sendBefore for each reminder
+            // Ensure when is the reminder time to be sent
+            const scheduledAt = new Date(
+              appointmentTime.getTime() +
+                (offset.sendBefore ? -offset.sendOffset : offset.sendOffset) *
+                  60 *
+                  1000
+            )
 
-        // Convert milliseconds to minutes
-        const diffInMinutes = diffInMilliseconds / 1000 / 60;
+            // Treat offset.scheduledAt as a Date, with fallback if it's a string
+            const existingScheduledAt = new Date(offset.scheduledAt)
 
-        console.log(`Time difference for reminder: ${diffInMinutes} minutes`);
+            // Only update scheduledAt if it's different from offset scheduledAt
+            // this will save for each reminder value: 48, 24, 1 or custom
+            if (scheduledAt.getTime() !== existingScheduledAt.getTime()) {
+              await prisma.reminderOffset.update({
+                where: { id: offset.id },
+                data: { scheduledAt },
+              })
+            }
+          }
+        }
 
-        // Compare with 48 hours (2880 minutes), 24 hours (1440 minutes), and 1 hour (60 minutes)
-        if (diffInMinutes <= 105 && diffInMinutes > 1 && reminder.send1Hr === "scheduled") {
-          console.log("Around 1-hour left for appointment ...");
-          
-          //send email
-          await sendReminderEmail(reminder.email, reminder.name, reminder.sendOffset)
-
-          // Send reminder for 48 hours
-          reminder.send1Hr = "sent"; // Update the status to sent in db for send1hr
-        } else if (
-          diffInMinutes <= 36 * 60 &&
-          diffInMinutes > 12 * 60 &&
-          reminder.send24Hr === "scheduled"
-        ) {
-          console.log("Around 24-hour left for appointment ...");
-
-          await sendReminderEmail(reminder.email, reminder.name, reminder.sendOffset)
-          // Send reminder for 24 hours
-          reminder.send24Hr = "sent"; // Update the status to sent in db for send24hr
-        } else if (
-          diffInMinutes <= 56 * 60 &&
-          diffInMinutes > 36 * 60 &&
-          reminder.send48hr === "scheduled"
-        ) {
-          console.log("Around 48-hour left for appointment ...");
-           //send email
-           await sendReminderEmail(reminder.email, reminder.name, reminder.sendOffset)
-
-          // Send reminder for 1 hour
-          reminder.send48hr = "sent"; // Update the status to sent in db for send48hr
+        // Process each reminder
+        for (const reminder of appointment.service.reminders) {
+          await processReminder(
+            now,
+            reminder,
+            targetEmail,
+            targetName,
+            appointmentTime,
+            appointment
+          )
         }
       }
-      console.log('reminder',reminders);
-     return reminders;
-    });
+    })
   }
-);
+)
+
+// Helper function to process reminders
+async function processReminder(
+  now: Date,
+  reminder: any,
+  email: string,
+  name: string,
+  appointmentTime: Date,
+  appointment: any
+) {
+  // Process each offset of all reminders
+  for (const offset of reminder.reminderOffset) {
+    // get the reminder time that can of all the offsets: 48,24, 1 or custom as it has already been updated above
+    const reminderTime = new Date(offset.scheduledAt)
+    // get the time difference
+    const diffFromNow = (reminderTime.getTime() - now.getTime()) / 1000 / 60
+
+    // Check if within 15-minute window and not sent
+
+    if (diffFromNow >= 0 && diffFromNow <= 15 && !offset.sent) {
+      let shouldSend = false
+      let message = ""
+
+      // Check the type of the reminder
+      switch (reminder.type) {
+        case "REMINDER":
+          // Check if sendBefore and appointment is scheduled
+          if (offset.sendBefore && appointment.status === "SCHEDULED") {
+            shouldSend = true
+            message = `${
+              offset.sendOffset / 60
+            }-hour reminder before your appointment`
+          }
+          break
+
+        case "FOLLOW_UP":
+          // Check if sendBefore and appointment is completed
+          if (!offset.sendBefore && appointment.status === "COMPLETED") {
+            shouldSend = true
+            message = `${
+              offset.sendOffset / 60
+            }-hour follow-up after your appointment`
+          }
+          break
+
+        case "CANCELLATION":
+          // Check if sendBefore and appointment is cancelled
+          if (!offset.sendBefore && appointment.status === "CANCELLED") {
+            const timeSinceCancellation =
+              (now.getTime() - appointment.updatedAt.getTime()) / 1000 / 60
+            if (timeSinceCancellation > 0 && timeSinceCancellation <= 15) {
+              shouldSend = true
+              message = "Cancellation confirmation"
+            }
+          }
+          break
+
+        case "MISSED":
+          // Check if sendBefore and appointment is missed
+          if (!offset.sendBefore && appointment.status === "MISSED") {
+            shouldSend = true
+            message = `${
+              offset.sendOffset / 60
+            }-hour notice after missed appointment`
+          }
+          break
+
+        case "CUSTOM":
+          // Check if sendBefore and appointment is scheduled
+          if (offset.sendBefore && appointment.status === "SCHEDULED") {
+            shouldSend = true
+            message = `${
+              offset.sendOffset / 60
+            }-hour custom reminder before appointment`
+          } else if (
+            !offset.sendBefore &&
+            ["COMPLETED", "CANCELLED", "MISSED"].includes(appointment.status)
+          ) {
+            shouldSend = true
+            message = `${
+              offset.sendOffset / 60
+            }-hour custom notice after appointment`
+          }
+          break
+      }
+
+      // Send email if shouldSend is true
+      if (shouldSend) {
+        try {
+          // sent the email
+          await sendReminderEmail(email, name, message)
+          // update the sent status in reminderOffset so that it won't be sent again for default 48,24, 1 hour
+          await prisma.reminderOffset.update({
+            where: { id: offset.id },
+            data: { sent: true },
+          })
+        } catch (error) {
+          console.error(`Failed to send reminder ${offset.id}:`, error)
+          throw error // Trigger Inngest retry
+        }
+      }
+    }
+  }
+}
