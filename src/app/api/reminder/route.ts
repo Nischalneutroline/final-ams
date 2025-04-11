@@ -45,8 +45,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-
-    console.error("Error in POST /api/reminder:", error);
+    console.error("Error in POST /api/reminder:", error)
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: "Validation failed", details: error.errors },
@@ -116,7 +115,7 @@ export async function PUT(req: NextRequest) {
         },
         reminderOffset: {
           upsert: parsedData.reminderOffset.map((reminderOffset) => ({
-            where: { id: Number(reminderOffset.id) }, // If ID exists, update, otherwise create
+            where: { id: reminderOffset.id }, // If ID exists, update, otherwise create
             update: {
               sendOffset: reminderOffset.sendOffset,
               scheduledAt: new Date(reminderOffset.scheduledAt),
