@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
+
     console.error("Error in POST /api/reminder:", error);
     if (error instanceof ZodError) {
       return NextResponse.json(
