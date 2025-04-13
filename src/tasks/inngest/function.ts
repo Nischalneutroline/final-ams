@@ -88,16 +88,16 @@ export const appointmentReminder = inngestClient.createFunction(
 async function processReminder(
   now: any, // Current time
   reminder: any, // Reminder object with offsets
-  email, // Target email address
-  name, // Target customer name
-  appointmentTime, // Appointment date/time
-  appointment // Appointment object
+  email: any, // Target email address
+  name: any, // Target customer name
+  appointmentTime: any, // Appointment date/time
+  appointment: any // Appointment object
 ) {
   // Loop through each offset in the reminder
   for (const offset of reminder.reminderOffset) {
     // Find the appointment-specific offset record
     const appointmentOffset = offset.appointmentOffsets.find(
-      (ao) => ao.appointmentId === appointment.id
+      (ao: any) => ao.appointmentId === appointment.id
     )
     // Skip if no offset exists or it’s already sent
     if (!appointmentOffset || appointmentOffset.sent) continue
