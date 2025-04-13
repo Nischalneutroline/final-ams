@@ -76,3 +76,4 @@ export async function createReminderForService(serviceId: string, type: any) {
   // Return the created reminder
   return reminder
 }
+

@@ -99,12 +99,14 @@ async function processReminder(
     const appointmentOffset = offset.appointmentOffsets.find(
       (ao: any) => ao.appointmentId === appointment.id
     )
+
     // Skip if no offset exists or it’s already sent
     if (!appointmentOffset || appointmentOffset.sent) continue
 
     // Get the scheduled time for this reminder
     const reminderTime = new Date(appointmentOffset.scheduledAt)
-    // Calculate time difference from now in minutes
+
+    // Calculate time difference from now in minutes 
     const diffFromNow = (reminderTime.getTime() - now.getTime()) / 1000 / 60
 
     // Check if reminder is within the 15-minute window
