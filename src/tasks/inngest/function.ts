@@ -188,7 +188,9 @@ async function processReminder(
       if (shouldSend) {
         try {
           // sent the email
-          await sendReminderEmail(email, name, message)
+          console.log('a',reminder.type);
+          console.log('b',message);
+          await sendReminderEmail(email, name, message,reminder.type)
           // update the sent status in reminderOffset so that it won't be sent again for default 48,24, 1 hour
           await prisma.reminderOffset.update({
             where: { id: offset.id },

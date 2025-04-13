@@ -20,6 +20,7 @@ export interface ReminderOffset {
   sendOffset: number; // Time offset in minutes
   scheduledAt: string; // ISO 8601 DateTime string (e.g., "2025-04-02T10:00:00Z")
   sendBefore: boolean; // True if sending before appointment, false if after
+  sent: boolean;
 }
 
 // Interface for Notification
@@ -37,9 +38,6 @@ export interface Reminder {
   services: string[]; // List of service IDs associated with the reminder
   notifications: Notification[]; // List of notifications for the reminder
   reminderOffset: ReminderOffset[]; // List of offsets to define when reminders are sent
-  send24hr: boolean; 
-  send48hr: boolean; 
-  send1hr: boolean;
 }
 
 

@@ -3,10 +3,38 @@ import { NextRequest, NextResponse } from "next/server";
  
 
 //option for the mail to be sent
-function mailOptions(email: string, name: string, sendOffset: number) {
+function mailOptions(email: string, name: string, message: string , type: string) {
+let subject , customHTML;
 
-  // Divide by 60 to convert to hours
- /*  const hoursLeft = sendOffset / 60; */
+  switch (type) {
+    case "REMINDER":
+     subject = "Upcoming Appointment Reminder";
+      customHTML = ``;
+      break;
+
+    case "FOLLOW_UP":
+    subject = "We Hope Your Appointment Went Well!";
+      customHTML = ``;
+      break;
+
+    case "CANCELLATION":
+      subject = "Appointment Cancellation Confirmation";
+      customHTML = ``;
+      break;
+
+    case "MISSED":
+      subject = "You Missed Your Appointment";
+      customHTML = ``;
+      break;
+
+    case "CUSTOM":
+      subject = "Custom Notification Regarding Your Appointment";
+      customHTML = ``;
+      break;
+  }
+
+
+
   return {
     from: `"Neutroline Support" <${process.env.SMTP_EMAIL}>`, // Sender's emai3l address
     to: email, // Recipient's email address
@@ -26,7 +54,7 @@ function mailOptions(email: string, name: string, sendOffset: number) {
             </div>
             <div style="padding: 0 5% 1%;font-size: 1.1rem;letter-spacing: 0.5px;">
             <p>Dear ${name},</p>
-            <p>You have around ${sendOffset} left for the appointment.</p>
+            <p> ${message} </p>
             
             <p>Thank You,<br/>
                 Team<br/>
@@ -41,7 +69,7 @@ function mailOptions(email: string, name: string, sendOffset: number) {
 
 
 
-export async function sendReminderEmail(email: string,name: string,sendOffset: number) {
+export async function sendReminderEmail(email: string,name: string,message: string, type: string) {
   const emailUser = process.env.SMTP_EMAIL;
   const emailPassword = process.env.SMTP_PASS;
 
@@ -55,7 +83,7 @@ export async function sendReminderEmail(email: string,name: string,sendOffset: n
     },
   });
 
-  const options = mailOptions(email, name, sendOffset);
+  const options = mailOptions(email, name, message, type);
  
 
   // Send email
