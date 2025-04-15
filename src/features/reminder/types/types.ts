@@ -15,13 +15,25 @@ export enum NotificationMethod {
   PUSH = "PUSH",
 }
 
+// Interface for Appointment Reminder Offset
+export interface AppointmentReminderOffset {
+  id: string
+  appointmentId: string
+  reminderOffsetId: string
+  scheduledAt: string // ISO string
+  sent: boolean
+}
+
 // Interface for Reminder Offset
 export interface ReminderOffset {
   sendOffset: number; // Time offset in minutes
   scheduledAt: string; // ISO 8601 DateTime string (e.g., "2025-04-02T10:00:00Z")
   sendBefore: boolean; // True if sending before appointment, false if after
   sent: boolean;
+  appointmentOffsets?: AppointmentReminderOffset[]
 }
+
+
 
 // Interface for Notification
 export interface Notification {

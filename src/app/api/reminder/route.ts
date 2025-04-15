@@ -4,7 +4,7 @@ import { ZodError } from "zod"
 import { prisma } from "@/lib/prisma"
 import { getReminderById } from "@/db/reminder"
 
-//
+
 // Create a new reminder
 export async function POST(req: NextRequest) {
   try {
@@ -17,9 +17,6 @@ export async function POST(req: NextRequest) {
         title: parsedData.title,
         description: parsedData.description,
         message: parsedData.message,
-        send24hr: parsedData.send24hr,
-        send48hr: parsedData.send48hr,
-        send1hr: parsedData.send1hr,
         services: {
           connect: parsedData.services.map((service) => ({ id: service })), // Connect existing services
         },
@@ -107,9 +104,6 @@ export async function PUT(req: NextRequest) {
         title: parsedData.title,
         description: parsedData.description,
         message: parsedData.message,
-        send24hr: parsedData.send24hr,
-        send48hr: parsedData.send48hr,
-        send1hr: parsedData.send1hr,
         services: {
           connect: parsedData.services.map((service) => ({ id: service })), // Connect existing services
         },

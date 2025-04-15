@@ -2,9 +2,10 @@
 // src/lib/createAppointment.js
 // Import Prisma client for database operations
 import { prisma } from "@/lib/prisma"
+import { Appointment } from "@/features/appointment/types/types"
 
 // Function to create an appointment and set up its reminders
-export async function createAppointment(appointmentData: any) {
+export async function createAppointment(appointmentData: Appointment) {
   // Create the appointment record
   const appointment = await prisma.appointment.create({ data: appointmentData })
 
@@ -40,39 +41,3 @@ export async function createAppointment(appointmentData: any) {
   return appointment
 }
 
-// Pre populate default reminder data
-// src/lib/prepopulateReminders.js
-
-// Function to create a reminder for a service with default offsets
-export async function createReminderForService(serviceId: string, type: any) {
-  // Create the reminder record
-  const reminder = await prisma.reminder.create({
-    data: {
-      type, // REMINDER, FOLLOW_UP, etc.
-      title: `${type} Reminder`, // E.g., "REMINDER Reminder"
-      description: `Default ${type.toLowerCase()} notification`, // Description
-      services: { connect: { id: serviceId } }, // Link to service
-    },
-  })
-
-  // Define default offsets (48h, 24h, 1h)
-  const offsets = [
-    { sendOffset: 48 * 60, sendBefore: type === "REMINDER" }, // 48 hours
-    { sendOffset: 24 * 60, sendBefore: type === "REMINDER" }, // 24 hours
-    { sendOffset: 1 * 60, sendBefore: type === "REMINDER" }, // 1 hour
-  ]
-
-  // Create each offset record
-  for (const offset of offsets) {
-    await prisma.reminderOffset.create({
-      data: {
-        reminderId: reminder.id, // Link to reminder
-        sendOffset: offset.sendOffset, // Offset in minutes
-        sendBefore: offset.sendBefore, // Before or after appointment
-      },
-    })
-  }
-
-  // Return the created reminder
-  return reminder
-}

@@ -99,15 +99,18 @@ async function processReminder(
     const appointmentOffset = offset.appointmentOffsets.find(
       (ao: any) => ao.appointmentId === appointment.id
     )
+    console.log('appointmentOffset',appointmentOffset);
+
     // Skip if no offset exists or it’s already sent
     if (!appointmentOffset || appointmentOffset.sent) continue
 
     // Get the scheduled time for this reminder
     const reminderTime = new Date(appointmentOffset.scheduledAt)
+ 
     // Calculate time difference from now in minutes
     const diffFromNow = (reminderTime.getTime() - now.getTime()) / 1000 / 60
 
-    // Check if reminder is within the 15-minute window
+   
     if (diffFromNow >= 0 && diffFromNow <= 15) {
       let shouldSend = false // Flag to determine if email should be sent
       let message = "" // Email message content
@@ -187,7 +190,7 @@ async function processReminder(
       if (shouldSend) {
         try {
           // Send the reminder email
-          await sendReminderEmail(email, name, message)
+          await sendReminderEmail(email, name, message, reminder.type)
           // Mark this appointment-specific offset as sent
           await prisma.appointmentReminderOffset.update({
             where: { id: appointmentOffset.id },

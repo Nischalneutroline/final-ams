@@ -1,6 +1,19 @@
 import { z } from "zod"
 import { ReminderType, NotificationMethod } from "../types/types"
 
+
+//appointmentreminder offset
+const AppointmentReminderOffsetSchema = z.object({
+  id: z.string().optional(),
+  appointmentId: z.string(),
+  reminderOffsetId: z.string(),
+  scheduledAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Scheduled date must be a valid ISO string",
+  }),
+  sent: z.boolean(),
+})
+
+
 // Reminder Offset Schema
 const ReminderOffsetSchema = z.object({
   id: z.string().optional(),
@@ -9,7 +22,11 @@ const ReminderOffsetSchema = z.object({
     message: "Scheduled date must be a valid ISO string",
   }),
   sendBefore: z.boolean(),
+  appointmentOffsets: z.array(AppointmentReminderOffsetSchema).optional()
 })
+
+
+
 
 // Notification Schema
 const NotificationSchema = z.object({
@@ -36,8 +53,5 @@ export const ReminderSchema = z.object({
   message: z.string().optional(), // Optional custom message
   services: z.array(z.string()).min(1, "At least one service is required"), // List of service IDs
   notifications: z.array(NotificationSchema), // List of notifications
-  reminderOffset: z.array(ReminderOffsetSchema), // List of reminder offsets
-  send24hr: z.boolean(),
-  send48hr: z.boolean(), 
-  send1hr: z.boolean(),
+  reminderOffset: z.array(ReminderOffsetSchema) // List of reminder offsets
 })
