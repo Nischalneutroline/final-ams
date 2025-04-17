@@ -5,51 +5,51 @@ import { FAQ } from "@/features/faq/types/types"
 import { prisma } from "@/lib/prisma"
 import { getFAQSById } from "@/db/faq"
 
-const dummyFAQs: FAQ[] = [
-  {
-    id: "1",
-    question: "How can I reset my password?",
-    answer:
-      "You can reset your password by clicking on the 'Forgot Password' link on the login page and following the instructions.",
-    category: "General",
-    isActive: true,
-    order: 1,
-    lastUpdatedById: "user123",
-    createdById: "admin1",
-  },
-  {
-    id: "2",
-    question: "How do I contact customer support?",
-    answer:
-      "You can reach our customer support team by emailing support@ourcompany.com or calling (123) 456-7890.",
-    category: "Support",
-    isActive: true,
-    order: 2,
-    lastUpdatedById: "user124",
-    createdById: "admin2",
-  },
-  {
-    id: "3",
-    question: "What payment methods are accepted?",
-    answer: "We accept credit/debit cards, PayPal, and bank transfers.",
-    category: "Billing",
-    isActive: true,
-    order: 3,
-    lastUpdatedById: "user125",
-    createdById: "admin3",
-  },
-  {
-    id: "4",
-    question: "Where can I view my order history?",
-    answer:
-      "You can view your order history by logging into your account and navigating to the 'Orders' section.",
-    category: "General",
-    isActive: false, // Inactive FAQ
-    order: 4,
-    lastUpdatedById: "user126",
-    createdById: "admin4",
-  },
-]
+// const dummyFAQs: FAQ[] = [
+//   {
+//     id: "1",
+//     question: "How can I reset my password?",
+//     answer:
+//       "You can reset your password by clicking on the 'Forgot Password' link on the login page and following the instructions.",
+//     category: "General",
+//     isActive: true,
+//     order: 1,
+//     lastUpdatedById: "user123",
+//     createdById: "admin1",
+//   },
+//   {
+//     id: "2",
+//     question: "How do I contact customer support?",
+//     answer:
+//       "You can reach our customer support team by emailing support@ourcompany.com or calling (123) 456-7890.",
+//     category: "Support",
+//     isActive: true,
+//     order: 2,
+//     lastUpdatedById: "user124",
+//     createdById: "admin2",
+//   },
+//   {
+//     id: "3",
+//     question: "What payment methods are accepted?",
+//     answer: "We accept credit/debit cards, PayPal, and bank transfers.",
+//     category: "Billing",
+//     isActive: true,
+//     order: 3,
+//     lastUpdatedById: "user125",
+//     createdById: "admin3",
+//   },
+//   {
+//     id: "4",
+//     question: "Where can I view my order history?",
+//     answer:
+//       "You can view your order history by logging into your account and navigating to the 'Orders' section.",
+//     category: "General",
+//     isActive: false, // Inactive FAQ
+//     order: 4,
+//     lastUpdatedById: "user126",
+//     createdById: "admin4",
+//   },
+// ]
 
 // POST: Create new FAQ
 export async function POST(req: NextRequest) {
@@ -103,7 +103,7 @@ export async function GET() {
       return NextResponse.json({ error: "No FAQs found!" }, { status: 404 })
     }
 
-    return NextResponse.json(dummyFAQs, { status: 200 })
+    return NextResponse.json(faqs, { status: 200 })
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch FAQs", message: error },

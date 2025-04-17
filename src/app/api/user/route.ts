@@ -5,22 +5,22 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { getUserByEmail, getUserById } from "@/db/user"
 
-let users: User[] = [
-  {
-    id: "1",
-    email: "john.doe@example.com",
-    password: "SecurePass123!",
-    name: "John Doe",
-    phone: "+1234567890",
-    role: Role.USER,
-    address: {
-      street: "123 Main St",
-      city: "New York",
-      country: "USA",
-      zipCode: "10001",
-    },
-  },
-]
+// let users: User[] = [
+//   {
+//     id: "1",
+//     email: "john.doe@example.com",
+//     password: "SecurePass123!",
+//     name: "John Doe",
+//     phone: "+1234567890",
+//     role: Role.USER,
+//     address: {
+//       street: "123 Main St",
+//       city: "New York",
+//       country: "USA",
+//       zipCode: "10001",
+//     },
+//   },
+// ]
 
 export async function POST(req: NextRequest) {
   try {
@@ -73,6 +73,7 @@ export async function GET() {
   try {
     // get all users
     const users = await prisma.user.findMany()
+    console.log(users)
 
     // Check if there are any users
     if (users.length === 0) {

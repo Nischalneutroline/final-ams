@@ -11,70 +11,70 @@ import {
 import { prisma } from "@/lib/prisma"
 import { getTicketById } from "@/db/ticket"
 
-let tickets: Ticket[] = [
-  {
-    id: "1",
-    userType: Role.USER,
-    subject: "Unable to log in",
-    ticketDescription:
-      "I cannot log in to my account despite entering the correct credentials.",
-    category: TicketCategory.ACCOUNT,
-    priority: Priority.HIGH,
-    status: TicketStatus.OPEN,
-    assignedTo: "admin123",
-    resolutionDescription: null, // Not resolved yet
-    proofFiles: null, // No files uploaded
-    initiatedById: "user001",
-    userId: "user001",
-  },
-  {
-    id: "2",
-    userType: Role.ADMIN,
-    subject: "Billing issue for subscription",
-    ticketDescription:
-      "Customer was charged twice for the same subscription. Please investigate.",
-    category: TicketCategory.BILLING,
-    priority: Priority.MEDIUM,
-    status: TicketStatus.IN_PROGRESS,
-    assignedTo: "support001",
-    resolutionDescription: null, // Not resolved yet
-    proofFiles: "http://example.com/proof/screenshot1.png", // Example proof file
-    initiatedById: "admin123",
-    userId: "customer456",
-  },
-  {
-    id: "3",
-    userType: Role.CUSTOMER,
-    subject: "Feedback on new feature",
-    ticketDescription:
-      "I would like to provide feedback about the new search feature that was rolled out last week.",
-    category: TicketCategory.FEEDBACK,
-    priority: Priority.LOW,
-    status: TicketStatus.RESOLVED,
-    assignedTo: null, // No agent assigned (resolved without assignment)
-    resolutionDescription:
-      "The feedback was reviewed and is being considered for future updates.",
-    proofFiles: null, // No files uploaded
-    initiatedById: "user789",
-    userId: "user789",
-  },
-  {
-    id: "4",
-    userType: Role.ADMIN,
-    subject: "Account security breach",
-    ticketDescription:
-      "It seems like someone attempted to breach a user's account. Please review the logs.",
-    category: TicketCategory.SECURITY,
-    priority: Priority.URGENT,
-    status: TicketStatus.CLOSED,
-    assignedTo: "security001",
-    resolutionDescription:
-      "The breach attempt was thwarted, and the user account was secured.",
-    proofFiles: "http://example.com/proof/securityLog.pdf", // Example proof file
-    initiatedById: "admin234",
-    userId: "user123",
-  },
-]
+// let tickets: Ticket[] = [
+//   {
+//     id: "1",
+//     userType: Role.USER,
+//     subject: "Unable to log in",
+//     ticketDescription:
+//       "I cannot log in to my account despite entering the correct credentials.",
+//     category: TicketCategory.ACCOUNT,
+//     priority: Priority.HIGH,
+//     status: TicketStatus.OPEN,
+//     assignedTo: "admin123",
+//     resolutionDescription: null, // Not resolved yet
+//     proofFiles: null, // No files uploaded
+//     initiatedById: "user001",
+//     userId: "user001",
+//   },
+//   {
+//     id: "2",
+//     userType: Role.ADMIN,
+//     subject: "Billing issue for subscription",
+//     ticketDescription:
+//       "Customer was charged twice for the same subscription. Please investigate.",
+//     category: TicketCategory.BILLING,
+//     priority: Priority.MEDIUM,
+//     status: TicketStatus.IN_PROGRESS,
+//     assignedTo: "support001",
+//     resolutionDescription: null, // Not resolved yet
+//     proofFiles: "http://example.com/proof/screenshot1.png", // Example proof file
+//     initiatedById: "admin123",
+//     userId: "customer456",
+//   },
+//   {
+//     id: "3",
+//     userType: Role.CUSTOMER,
+//     subject: "Feedback on new feature",
+//     ticketDescription:
+//       "I would like to provide feedback about the new search feature that was rolled out last week.",
+//     category: TicketCategory.FEEDBACK,
+//     priority: Priority.LOW,
+//     status: TicketStatus.RESOLVED,
+//     assignedTo: null, // No agent assigned (resolved without assignment)
+//     resolutionDescription:
+//       "The feedback was reviewed and is being considered for future updates.",
+//     proofFiles: null, // No files uploaded
+//     initiatedById: "user789",
+//     userId: "user789",
+//   },
+//   {
+//     id: "4",
+//     userType: Role.ADMIN,
+//     subject: "Account security breach",
+//     ticketDescription:
+//       "It seems like someone attempted to breach a user's account. Please review the logs.",
+//     category: TicketCategory.SECURITY,
+//     priority: Priority.URGENT,
+//     status: TicketStatus.CLOSED,
+//     assignedTo: "security001",
+//     resolutionDescription:
+//       "The breach attempt was thwarted, and the user account was secured.",
+//     proofFiles: "http://example.com/proof/securityLog.pdf", // Example proof file
+//     initiatedById: "admin234",
+//     userId: "user123",
+//   },
+// ]
 
 // Create a new ticket (POST)
 export async function POST(req: NextRequest) {

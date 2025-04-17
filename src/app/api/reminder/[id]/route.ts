@@ -1,94 +1,48 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ReminderSchema } from "@/features/reminder/schemas/schema" // Adjust the path accordingly
-import { ZodError } from "zod"
-import { prisma } from "@/lib/prisma"
+import { getAnnouncementOrOfferById } from "@/db/announcement-offer"
+import { getAppointmentById } from "@/db/appointment"
 import { getReminderById } from "@/db/reminder"
+import { ReminderSchema } from "@/features/reminder/schemas/schema"
+import { prisma } from "@/lib/prisma"
+import { ZodError } from "zod"
 
-
-// Create a new reminder
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json()
-    const parsedData = ReminderSchema.parse(body)
-
-    const newReminder = await prisma.reminder.create({
-      data: {
-        type: parsedData.type,
-        title: parsedData.title,
-        description: parsedData.description,
-        message: parsedData.message,
-        services: {
-          connect: parsedData.services.map((service) => ({ id: service })), // Connect existing services
-        },
-        notifications: {
-          create: parsedData.notifications.map((notification) => ({
-            method: notification.method,
-          })),
-        },
-        reminderOffset: {
-          create: parsedData.reminderOffset.map((reminderOffset) => ({
-            sendOffset: reminderOffset.sendOffset,
-            scheduledAt: new Date(reminderOffset.scheduledAt),
-            sendBefore: reminderOffset.sendBefore,
-          })),
-        },
-      },
-      include: {
-        services: true,
-        notifications: true,
-        reminderOffset: true,
-      },
-    })
-
-    return NextResponse.json(
-      { message: "Reminder created successfully", reminder: newReminder },
-      { status: 201 }
-    )
-  } catch (error) {
-    console.error("Error in POST /api/reminder:", error)
-    if (error instanceof ZodError) {
-      return NextResponse.json(
-        { error: "Validation failed", details: error.errors },
-        { status: 400 }
-      )
-    }
-    return NextResponse.json(
-      { error: "Internal server error", details: error },
-      { status: 500 }
-    )
-  }
+interface ParamsProps {
+  params: Promise<{ id: string }>
 }
 
-// Fetch all reminders
-export async function GET() {
+export async function GET(req: NextRequest, { params }: ParamsProps) {
   try {
-    const reminders = await prisma.reminder.findMany()
+    const { id } = await params
+    const announcement = await getReminderById(id)
 
-    if (reminders.length === 0) {
-      return NextResponse.json({ error: "No reminders found" }, { status: 404 })
+    if (!announcement) {
+      return NextResponse.json(
+        { error: "Reminder with id not found" },
+        { status: 404 }
+      )
     }
-    return NextResponse.json(reminders, { status: 200 })
+    return NextResponse.json(announcement, { status: 200 })
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch reminders" },
+      { error: "Failed to fetch reminder" },
       { status: 500 }
     )
   }
 }
 
 // Update an existing reminder
-export async function PUT(req: NextRequest) {
+export async function PUT(req: NextRequest, { params }: ParamsProps) {
   try {
-    const body = await req.json()
-    const parsedData = ReminderSchema.parse(body)
-
-    const { id } = body
+    const { id } = await params
     if (!id) {
       return NextResponse.json(
         { error: "Reminder Id required!" },
         { status: 400 }
       )
     }
+
+    const body = await req.json()
+    const parsedData = ReminderSchema.parse(body)
 
     const existingReminder = await getReminderById(id)
 
@@ -143,7 +97,7 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
-        { error: "Validation failed", details: error.errors },
+        { error: "Validation failed", details: error },
         { status: 400 }
       )
     }
@@ -155,9 +109,9 @@ export async function PUT(req: NextRequest) {
 }
 
 // Delete a reminder
-export async function DELETE(req: NextRequest) {
+export async function DELETE(req: NextRequest, { params }: ParamsProps) {
   try {
-    const { id } = await req.json()
+    const { id } = await params
 
     if (!id) {
       return NextResponse.json(
