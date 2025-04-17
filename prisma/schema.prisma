@@ -210,6 +210,7 @@ model AnnouncementOrOffer {
   expiredAt ExpirationDuration @default(THIRTY_DAYS) // When it expires
 
   createdAt DateTime @default(now()) // Creation timestamp
+  updatedAt   DateTime @updatedAt
 }
 
 enum Showon {

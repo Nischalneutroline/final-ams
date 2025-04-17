@@ -26,7 +26,7 @@ export async function sendReminderEmail(
   message: string,
   type: string
 ) {
-  console.log('email',email);
+
   const html = await render(<ReminderEmail name={name} message={message} />);
 
   const transporter = nodemailer.createTransport({

@@ -1,60 +1,37 @@
 import { inngestClient } from "@/tasks/inngest/client"
 import { prisma } from "@/lib/prisma"
-import { ExpirationDuration } from "@/features/announcement-offer/types/types"
 
 
-function calculateExpirationDate(start: Date, duration: ExpirationDuration): Date {
-  const d = new Date(start);
-  switch (duration) {
-    case "ONE_DAY":
-      d.setDate(d.getDate() + 1);
-      break;
-    case "THREE_DAYS":
-      d.setDate(d.getDate() + 3);
-      break;
-    case "SEVEN_DAYS":
-      d.setDate(d.getDate() + 7);
-      break;
-    case "THIRTY_DAYS":
-      d.setDate(d.getDate() + 30);
-      break;
-    case "NEVER":
-    default:
-      return new Date("9999-12-31");
-  }
-  return d;
-}
+export const sendAnnouncement = inngestClient.createFunction(
+  { id: "send-announcement-or-offer" },
+  { event: "announcement/send" },
+  async ({ event, step }) => {
+    const { id, lastUpdate } = event.data;
 
+    // Fetch the latest record from DB inside a step
+    const announcement = await step.run("fetch-announcement", async () => {
+      return await prisma.announcementOrOffer.findUnique({
+        where: { id },
+      });
+    });
 
-export const processAnnouncements = inngestClient.createFunction(
-  {
-    id: "process-announcements",
-    name: "Process Scheduled Announcements",
-  },
-  { cron: "0 0 * * *" }, // CRON: Every day at 00:00 UTC
-  async ({ step }) => {
-    const now = new Date()
-
-    // Step 1: Fetch scheduled but inactive announcements
-    const pendingAnnouncements = await step.run("fetch-pending", async () => {
-      return prisma.announcementOrOffer.findMany({
-        where: {
-          isImmediate: false,
-          scheduledAt: {
-            lte: now,
-          },
-          expiredAt: { not: "NEVER" },
-        },
-      })
-    })
-
-    for (const announcement of pendingAnnouncements) {
-      const expiration = calculateExpirationDate(new Date(announcement .scheduledAt), announcement.expiredAt as ExpirationDuration);
-      if (now <= expiration) {
-        console.log(` Scheduled announcement: ${announcement .title} | Audience: ${announcement.audience}`);
-      }
+    // If the announcement is missing, don't continue
+    if (!announcement) {
+      return { success: false, message: "Announcement not found" };
     }
 
-    return { count: pendingAnnouncements.length };
+    // Skip if version is outdated (announcement was updated after the event was scheduled)
+    if (new Date(announcement.updatedAt).toISOString() !== lastUpdate) {
+      return { success: false, message: "Stale event – announcement was updated" };
+    }
+
+    // TODO: Send email, push notification, or SMS here
+    await step.run("send-email", async () => {
+      // Call your email service or notification handler
+      console.log(`Sending announcement to audience: ${announcement.audience}`);
+      // Add actual email/push logic here
+    });
+
+    return { success: true };
   }
 );
