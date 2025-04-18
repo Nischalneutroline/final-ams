@@ -9,8 +9,8 @@ export enum Showon {
 // Enum for TargetAudience
 export enum TargetAudience {
   ALL = "ALL",
-  APPOINTED_USERS = "APPOINTED_USERS",
-  CANCELLED_USERS = "CANCELLED_USERS",
+  APPOINTED_USERS = "APPOINTED_USERS",//this is actually active users later change this active user
+  CANCELLED_USERS = "CANCELLED_USERS",//this is actually inactive users later change this inactive user
 }
 
 // Enum for ExpirationDuration

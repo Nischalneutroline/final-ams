@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
       name: "announcement/send",
       data: {
         id: newAnnouncement.id,
-        lastUpdate: newAnnouncement.updatedAt.toISOString(),
+        lastUpdate: newAnnouncement.updatedAt.getTime(),
       },
-      sendAt: new Date(newAnnouncement.scheduledAt),
+      ts: new Date(newAnnouncement.scheduledAt).getTime(),
     });
     return NextResponse.json(
       {
@@ -130,9 +130,9 @@ export async function PUT(req: NextRequest) {
       name: "announcement/send",
       data: {
         id: updatedAnnouncement.id,
-        lastUpdate: updatedAnnouncement.updatedAt.toISOString(),
+        lastUpdate: updatedAnnouncement.updatedAt.getTime(),
       },
-      sendAt: new Date(updatedAnnouncement.scheduledAt),
+      ts: new Date(updatedAnnouncement.scheduledAt).getTime(),
     });
 
     return NextResponse.json(
