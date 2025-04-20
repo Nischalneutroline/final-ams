@@ -15,7 +15,7 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import CakeIcon from "@mui/icons-material/Cake";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import BadgeIcon from "@mui/icons-material/Badge";
-import { DataTableRowActions } from "../table/data-table-row-actions";
+import { AppointmentDataTableRowActions } from "../table/datatable-row-actions/appointmentdatatable-row-actions";
 
 interface User {
   id: string;
@@ -93,7 +93,7 @@ const AppointmentCardView = ({ user }: CustomerCardViewProps) => {
                       </Typography>
                     </Stack>
                   </Box>
-                  <DataTableRowActions row={user} />
+                  <AppointmentDataTableRowActions row={user} />
                 </div>
               </Stack>
 

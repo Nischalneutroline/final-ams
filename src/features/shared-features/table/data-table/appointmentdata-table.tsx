@@ -25,25 +25,53 @@ import {
   TableRow,
 } from "../components/ui/table";
 
+import { TableContainer, Paper } from "@mui/material";
+
 import { DataTablePagination } from "../data-table-pagination";
+import { CustomerDataTableToolbar } from "../data-table-toolbar/customerdata-table-toolbar";
+import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
+import {
+  retriveAppointment,
+  retriveService,
+  retriveUsers,
+} from "@/state/admin/AdminServices";
+import { useEffect } from "react";
 import { AppointmentDataTableToolbar } from "../data-table-toolbar/appointmentdata-table-toolbar";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps<TValue> {
+  columns: ColumnDef<TValue>[];
 }
 
-export function AppointmentDataTable<TData, TValue>({
+export function AppointmentDataTable<TValue>({
   columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const { isSuccess: addSuccess } = useAppSelector(
+    (state: RootState) => state.admin.admin.appointment.add.response
+  );
+  const { isSuccess: editSuccess } = useAppSelector(
+    (state: RootState) => state.admin.admin.appointment.edit.response
+  );
+  const { isSuccess: deleteSuccess } = useAppSelector(
+    (state: RootState) => state.admin.admin.appointment.delete.response
+  );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(retriveAppointment());
+    dispatch(retriveService());
+  }, [dispatch, addSuccess, editSuccess, deleteSuccess]);
+
+  const { details } = useAppSelector(
+    (state: RootState) => state.admin.admin.appointment.view.response
+  );
+
+  const data = details;
 
   const table = useReactTable({
     data,
@@ -68,17 +96,17 @@ export function AppointmentDataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4 lg:max-w-[calc(100vw-370px)]">
+    <div className="space-y-4 lg:max-w-[calc(100vw-120px)]">
       <AppointmentDataTableToolbar table={table} />
 
-      <div className="overflow-y-auto max-h-[390px] rounded-md border scrollbar ">
-        <Table className="min-w-full  ">
+      <div className="overflow-y-auto max-w-screen overflow-x-auto  max-h-[300px] sm:max-h-[calc(100vh-320px)] md:max-h-[calc(100vh-280px)] lg:max-h-[calc(100vh-601px)] rounded-md border scrollbar ">
+        <Table className="min-w-full text-[11px] sm:text-[13px] lg:text-[14px]">
           <TableHeader className=" z-20 ">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead
-                    className="px-2 py-2 text-center"
+                    className="px-2 py-1 md:py-2  text-start text-[12px] sm:text-[14px] lg:text-[16px] bg-slate-200"
                     key={header.id}
                     colSpan={header.colSpan}
                   >
@@ -101,7 +129,7 @@ export function AppointmentDataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell className="px-2 py-2 text-center" key={cell.id}>
+                    <TableCell className="px-2 py-2 text-start" key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -112,10 +140,7 @@ export function AppointmentDataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-start">
                   No results.
                 </TableCell>
               </TableRow>

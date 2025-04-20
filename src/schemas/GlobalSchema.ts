@@ -17,6 +17,7 @@ export type CssSchema = {
 export type ChildrenSchema = { children?: ReactNode };
 export type OtherChildrenSchema = { other?: ReactNode };
 export type TitleSchema = { title?: string };
+
 export type ErrorMsgSchema = { errorMsg?: string };
 export type SrcSchema = { src?: string };
 export type HandleActionSchema = { handleAction?: any };
@@ -27,7 +28,11 @@ export type PopupAreaSchema = { showPopup?: boolean; popupArea?: ReactNode };
 export type StatusSchema = {
   status?: "success" | "alert" | "warning" | "info";
 };
-export type OptionSchema = { label?: string; value?: string };
+export type OptionSchema = {
+  label?: string;
+  value?: string | undefined;
+  offset?: string | number;
+};
 export type LoadingSchema = {
   isLoading?: boolean;
   setIsLoading?: (val: boolean) => void;
@@ -69,4 +74,16 @@ export type User = {
   totalAppointments: number;
   lastAppointment: string;
   createdBy: string;
+};
+
+export type FormPropsValueType = {
+  input?: string;
+  label?: string;
+  type?: string;
+  placeholder?: string;
+  showImportant?: boolean;
+  defaultValue?: any;
+  icon?: ReactNode;
+  disabledValue?: any;
+  format?: string;
 };

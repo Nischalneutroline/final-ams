@@ -43,12 +43,12 @@ const Header = (props: HeaderProps) => {
 
   return (
     <motion.div
-      className="relative min-h-[376px] bg-[#287AFF] rounded-b-[12px]"
+      className="relative h-[80px] lg:min-h-[376px] bg-[#287AFF] rounded-b-[12px] w-full"
       initial={false}
       animate={isFlag ? "compressed" : "expanded"}
     >
       <motion.div
-        className=" flex flex-col absolute top-2 md:top-3 lg:top-4 w-full px-2 sm:px-4 md:px-6 right-0 lg:max-w-[calc(100vw-330px)] xl:pl-2 xl:pr-12"
+        className=" flex flex-col absolute top-2 md:top-3 lg:top-4 w-full px-2  md:px-4  right-0 lg:max-w-[calc(100vw-100px)] xl:pl-2 xl:pr-12"
         initial={false}
         // animate={{
         //   maxWidth: isSmallScreen
@@ -64,7 +64,14 @@ const Header = (props: HeaderProps) => {
           <HeaderTitle
             icon={
               <HomeRoundedIcon
-                sx={{ fontSize: "25px" }}
+                sx={{
+                  fontSize: {
+                    xs: "20px",
+                    sm: "23px",
+                    lg: "28px",
+                    xl: "30px",
+                  },
+                }}
                 className="text-white"
               />
             }
@@ -74,13 +81,14 @@ const Header = (props: HeaderProps) => {
             <HeaderSearch />
             <CountryFlag countryCode="US" />
             <div className="flex gap-4 items-center">
-              <div className="relative flex items-center justify-center h-[30px] w-[30px] lg:h-[35px] lg:w-[35px] 2xl:h-[45px] 2xl:w-[45px] bg-white rounded-[20%]">
+              <div className="relative flex items-center justify-center h-[25px] w-[25px] sm:h-[30px] sm:w-[30px] lg:h-[35px] lg:w-[35px] 2xl:h-[45px] 2xl:w-[45px] bg-white rounded-[20%]">
                 <div className="absolute bg-red-400 lg:h-2 lg:w-2 h-[6px] w-[6px] top-1 right-1 2xl:top-2 2xl:right-2 rounded-full" />
                 <NotificationsNoneOutlinedIcon
                   sx={{
                     fontSize: {
+                      xs: "20px",
                       sm: "23px",
-                      lg: "25px",
+                      lg: "28px",
                       xl: "30px",
                     },
                   }}

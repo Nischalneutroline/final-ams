@@ -46,7 +46,7 @@ const UserProfile = () => {
         />
       </div> */}
       <SignedOut>
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 items-center-center">
           <SignInButton>
             <motion.button
               whileHover={{
@@ -55,7 +55,7 @@ const UserProfile = () => {
               }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="flex gap-2 justify-center items-center w-[80px] h-[36px] bg-[#0070FF] font-medium text-white text-[14px] rounded-md cursor-pointer border border-black"
+              className="flex gap-2 justify-center items-center w-[70px] h-[26px] sm:w-[80px] sm:h-[36px] lg:h-[45px] lg:w-[100px] bg-[#0070FF] font-medium text-white text-[12px] sm:text-[14px] lg:text-[17px] rounded-sm sm:rounded-lg cursor-pointer border border-white"
             >
               Sign In
             </motion.button>
@@ -68,7 +68,7 @@ const UserProfile = () => {
               }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="flex gap-2 justify-center items-center w-[80px] h-[36px] bg-green-500 font-medium text-white text-[14px] rounded-md cursor-pointer border border-green-500"
+              className="flex gap-2 justify-center items-center w-[70px] h-[26px] sm:w-[80px] sm:h-[36px] lg:h-[45px] lg:w-[100px] bg-green-500 font-medium text-white text-[12px] sm:text-[14px] lg:text-[17px] rounded-sm sm:rounded-lg cursor-pointer border border-black"
             >
               Sign Up
             </motion.button>

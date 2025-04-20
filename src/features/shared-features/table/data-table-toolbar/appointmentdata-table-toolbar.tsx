@@ -12,14 +12,15 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger, // ✅ Now from Shadcn-style import
-} from "../components/ui/dropdown-menu"; // ✅ Local path, not @radix-ui
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 import { TrashIcon } from "lucide-react";
 
 import { CalendarDatePicker } from "../../common/calender-date-picker";
-import { incomeType, categories, totalAppointment } from "../data";
+import { categories, incomeType, totalAppointment } from "../data";
 import { DataTableFacetedFilter } from "../data-table-faceted-filter";
 import { DataTableViewOptions } from "../data-table-view-options";
+import { Status } from "../../../service/types/types";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -41,17 +42,17 @@ export function AppointmentDataTableToolbar<TData>({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="flex flex-row sm:flex-wrap items-center justify-between gap-1">
       <div className="flex flex-wrap items-center gap-2 flex-1">
         <Input
-          placeholder="Filter labels..."
+          placeholder="Filter by Customer Name..."
           value={
-            (table.getColumn("fullName")?.getFilterValue() as string) ?? ""
+            (table.getColumn("customerName")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) => {
-            table.getColumn("fullName")?.setFilterValue(event.target.value);
+            table.getColumn("customerName")?.setFilterValue(event.target.value);
           }}
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-[30px] sm:h-[35px] lg:h-[36px] w-[200px] sm:w-[150px] md:w-[200px] lg:w-[250px] text-[12px] md:text-[14px] lg:text-[14px]"
         />
 
         {/* Faceted Filters */}
@@ -69,62 +70,48 @@ export function AppointmentDataTableToolbar<TData>({
           <DropdownMenuContent align="start" className="w-[180px]">
             <DropdownMenuLabel>Select Filters</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuCheckboxItem
-              checked={selectedFilter === "phoneNumber"}
-              onSelect={() => setSelectedFilter("phoneNumber")}
-            >
-              Category
-            </DropdownMenuCheckboxItem> */}
             <DropdownMenuCheckboxItem
-              checked={selectedFilters.includes("createdBy")}
+              checked={selectedFilters.includes("status")}
               onCheckedChange={(checked) => {
                 setSelectedFilters((prev) =>
                   checked
-                    ? [...prev, "createdBy"]
-                    : prev.filter((f) => f !== "createdBy")
+                    ? [...prev, "status"]
+                    : prev.filter((f) => f !== "status")
                 );
               }}
             >
-              Created By
+              Status
             </DropdownMenuCheckboxItem>
 
             <DropdownMenuCheckboxItem
-              checked={selectedFilters.includes("totalAppointments")}
+              checked={selectedFilters.includes("bookedBy")}
               onCheckedChange={(checked) => {
                 setSelectedFilters((prev) =>
                   checked
-                    ? [...prev, "totalAppointments"]
-                    : prev.filter((f) => f !== "totalAppointments")
+                    ? [...prev, "bookedBy"]
+                    : prev.filter((f) => f !== "bookedBy")
                 );
               }}
             >
-              Total Appointments
+              Booked By
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         {/* Conditionally Render Filters */}
-        {/* {selectedFilter === "phoneNumber" && table.getColumn("phoneNumber") && (
+        {selectedFilters.includes("status") && table.getColumn("status") && (
           <DataTableFacetedFilter
-            column={table.getColumn("phoneNumber")}
-            title="Phone Number"
+            column={table.getColumn("status")}
+            title="Status"
             options={categories}
           />
-        )} */}
-        {selectedFilters.includes("createdBy") &&
-          table.getColumn("createdBy") && (
-            <DataTableFacetedFilter
-              column={table.getColumn("createdBy")}
-              title="Created By"
-              options={categories}
-            />
-          )}
+        )}
 
-        {selectedFilters.includes("totalAppointments") &&
-          table.getColumn("totalAppointments") && (
+        {selectedFilters.includes("bookedBy") &&
+          table.getColumn("bookedBy") && (
             <DataTableFacetedFilter
-              column={table.getColumn("totalAppointments")}
-              title="Total Appointments"
+              column={table.getColumn("bookedBy")}
+              title="Booked By"
               options={totalAppointment}
             />
           )}
@@ -133,11 +120,14 @@ export function AppointmentDataTableToolbar<TData>({
         {isFiltered && (
           <Button
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
+            onClick={() => {
+              table.resetColumnFilters();
+              setSelectedFilters([]);
+            }}
+            className="h-[26px] sm:h-[30px] lg:h-[34px] w-[70px] md:w-[80px] lg:w-[100px] text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-gray-500 border-gray-300 border"
           >
             Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
+            <Cross2Icon className="h-4 w-4" />
           </Button>
         )}
 
@@ -145,19 +135,25 @@ export function AppointmentDataTableToolbar<TData>({
         <CalendarDatePicker
           date={dateRange}
           onDateSelect={handleDateSelect}
-          className="h-9 w-[250px]"
+          className="h-[30px] sm:h-[35px] lg:h-[36px] w-[200px] md:w-[230px] lg:w-[250px] text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-gray-500"
           variant="outline"
         />
       </div>
 
       {/* Trash / View Options */}
-      <div className="flex items-center gap-2">
-        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <Button variant="outline" size="sm">
-            <TrashIcon className="mr-2 size-4" />
-            Delete ({table.getFilteredSelectedRowModel().rows.length})
-          </Button>
-        )}
+      <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 md:gap-3">
+        <div className=" h-[30px] sm:h-[35px] lg:h-[36px] w-[100px]  lg:w-[250px]">
+          {table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-[30px] sm:h-[35px] lg:h-[38px] w-[100px] sm:w-[130px] lg:w-[170px] text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-gray-500 gap-1"
+            >
+              <TrashIcon className=" size-3.5 lg:size-4" />
+              Delete ({table.getFilteredSelectedRowModel().rows.length})
+            </Button>
+          )}
+        </div>
         <DataTableViewOptions table={table} />
       </div>
     </div>

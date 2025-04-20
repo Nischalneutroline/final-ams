@@ -3,7 +3,7 @@
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
-import { Button } from "./components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,16 +11,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
+} from "../components/ui/dropdown-menu";
+import { useAppDispatch } from "@/state/store";
 
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
+import { deleteService, deleteUser } from "@/state/admin/AdminServices";
+import {
+  setEditServiceFormTrue,
+  setEditServiceId,
+} from "@/state/admin/AdminSlice";
+
+interface SupportDataTableRowActionsProps<TData> {
+  row: Row<TData> | any;
 }
 
-export function DataTableRowActions<TData>({
+export function ServiceDataTableRowActions<TData>({
   row,
-}: DataTableRowActionsProps<TData>) {
+}: SupportDataTableRowActionsProps<TData>) {
   // const task = taskSchema.parse(row.original);
+
+  const dispatch = useAppDispatch();
 
   return (
     <DropdownMenu>
@@ -34,11 +43,22 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            dispatch(setEditServiceId(row.original.id));
+            dispatch(setEditServiceFormTrue(true));
+          }}
+        >
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem>Make a copy</DropdownMenuItem>
         <DropdownMenuItem>Favorite</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            dispatch(deleteService(row.original));
+          }}
+        >
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>

@@ -41,17 +41,15 @@ export function CustomerDataTableToolbar<TData>({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="flex flex-row sm:flex-wrap items-center justify-between gap-1">
       <div className="flex flex-wrap items-center gap-2 flex-1">
         <Input
-          placeholder="Filter labels..."
-          value={
-            (table.getColumn("fullName")?.getFilterValue() as string) ?? ""
-          }
+          placeholder="Filter by Name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
-            table.getColumn("fullName")?.setFilterValue(event.target.value);
+            table.getColumn("name")?.setFilterValue(event.target.value);
           }}
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="h-[30px] sm:h-[35px] lg:h-[36px] w-[200px] sm:w-[150px] md:w-[200px] lg:w-[250px] text-[12px] md:text-[14px] lg:text-[14px]"
         />
 
         {/* Faceted Filters */}
@@ -76,12 +74,12 @@ export function CustomerDataTableToolbar<TData>({
               Category
             </DropdownMenuCheckboxItem> */}
             <DropdownMenuCheckboxItem
-              checked={selectedFilters.includes("createdBy")}
+              checked={selectedFilters.includes("createdAt")}
               onCheckedChange={(checked) => {
                 setSelectedFilters((prev) =>
                   checked
                     ? [...prev, "createdBy"]
-                    : prev.filter((f) => f !== "createdBy")
+                    : prev.filter((f) => f !== "createdAt")
                 );
               }}
             >
@@ -137,10 +135,10 @@ export function CustomerDataTableToolbar<TData>({
               table.resetColumnFilters();
               setSelectedFilters([]);
             }}
-            className="h-8 px-2 lg:px-3"
+            className="h-[26px] sm:h-[30px] lg:h-[34px] w-[70px] md:w-[80px] lg:w-[100px] text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-gray-500 border-gray-300 border"
           >
             Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
+            <Cross2Icon className="h-4 w-4" />
           </Button>
         )}
 
@@ -148,19 +146,25 @@ export function CustomerDataTableToolbar<TData>({
         <CalendarDatePicker
           date={dateRange}
           onDateSelect={handleDateSelect}
-          className="h-9 w-[250px]"
+          className="h-[30px] sm:h-[35px] lg:h-[36px] w-[200px] md:w-[230px] lg:w-[250px] text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-gray-500"
           variant="outline"
         />
       </div>
 
       {/* Trash / View Options */}
-      <div className="flex items-center gap-2">
-        {table.getFilteredSelectedRowModel().rows.length > 0 && (
-          <Button variant="outline" size="sm">
-            <TrashIcon className="mr-2 size-4" />
-            Delete ({table.getFilteredSelectedRowModel().rows.length})
-          </Button>
-        )}
+      <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 md:gap-3">
+        <div className=" h-[30px] sm:h-[35px] lg:h-[36px] w-[100px]  lg:w-[250px]">
+          {table.getFilteredSelectedRowModel().rows.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-[30px] sm:h-[35px] lg:h-[38px] w-[100px] sm:w-[130px] lg:w-[170px] text-[11px] sm:text-[12px] md:text-[13px] lg:text-[14px] text-gray-500 gap-1"
+            >
+              <TrashIcon className=" size-3.5 lg:size-4" />
+              Delete ({table.getFilteredSelectedRowModel().rows.length})
+            </Button>
+          )}
+        </div>
         <DataTableViewOptions table={table} />
       </div>
     </div>

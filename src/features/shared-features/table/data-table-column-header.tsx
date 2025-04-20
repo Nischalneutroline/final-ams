@@ -33,38 +33,45 @@ export function DataTableColumnHeader<TData, TValue>({
   }
 
   return (
-    <div
-      className={cn("flex justify-center items-center space-x-2", className)}
-    >
+    <div className={cn("flex justify-start items-center", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
-            className="-ml-3 h-8 data-[state=open]:bg-accent"
+            className=" px-2 py-1 md:py-2 text-center text-[12px]  sm:text-[14px] lg:text-[15px]  data-[state=open]:bg-accent"
           >
             <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="ml-2 h-4 w-4" />
+              <ArrowDownIcon className=" h-4 w-4" />
             ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="ml-2 h-4 w-4" />
+              <ArrowUpIcon className=" h-4 w-4" />
             ) : (
-              <CaretSortIcon className="ml-2 h-4 w-4" />
+              <CaretSortIcon className=" h-4 w-4" />
             )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-            <ArrowUpIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem
+            className="text-[12px]"
+            onClick={() => column.toggleSorting(false)}
+          >
+            <ArrowUpIcon className="mr-0 lg:mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             Asc
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-            <ArrowDownIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem
+            className="text-[12px]"
+            onClick={() => column.toggleSorting(true)}
+          >
+            <ArrowDownIcon className="mr-0 lg:mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             Desc
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-            <EyeNoneIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+          <DropdownMenuItem
+            className="text-[12px]"
+            onClick={() => column.toggleVisibility(false)}
+          >
+            <EyeNoneIcon className="mr-0 lg:mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
             Hide
           </DropdownMenuItem>
         </DropdownMenuContent>
