@@ -38,6 +38,7 @@ const AddAppointmentForm = () => {
   const onSubmit = (data: AdminUserFormValues) => {
     console.log("Form Submitted:", data);
     reset();
+    dispatch(setAddAppointmentFormTrue(false));
   };
 
   //  Ref for closing modal on outside click
@@ -139,11 +140,11 @@ const AddAppointmentForm = () => {
             animate={{ y: 0, scale: [0.9, 1.02, 1] }}
             exit={{ y: 50, scale: 0.9 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="h-[90%] sm:h-[80%] lg:h-auto lg:pb-8 w-[90%] sm:w-[75%] lg:w-[50%] bg-white rounded-2xl shadow-xl flex flex-col overflow-y-auto"
+            className=" lg:pb-8 w-[90%] sm:w-[75%] lg:w-[60%] bg-white rounded-2xl shadow-xl flex flex-col overflow-y-auto px-4"
           >
-            <div className="relative h-[120px] lg:h-[140px] bg-gradient-to-b from-blue-300 to-white flex flex-col text-black justify-items-center  py-2 gap-2 px-4">
-              <div className="flex md:flex-col items-center justify-center gap-2 md:gap-0 pt-3">
-                <PersonAddAltIcon
+            <div className="relative h-[120px] lg:h-[140px]  flex flex-col text-black justify-items-center  py-8 px-4">
+              <div className="flex items-center justify-start space-x-4  pt-3 px-2">
+                {/* <PersonAddAltIcon
                   sx={{
                     fontSize: {
                       xs: "20px",
@@ -152,12 +153,12 @@ const AddAppointmentForm = () => {
                       xl: "28px",
                     },
                   }}
-                />
-                <div className="text-[16px] sm:text-[18px] md:text-[20px] 2xl:text-[32px] font-normal lg:font-semibold ">
-                  Add New Appointment
+                /> */}
+                <div className="text-[20px] sm:text-[22px] md:text-[24px] 2xl:text-[28px] font-medium md:font-semibold  text-[#287AFF]">
+                  Add Appointment
                 </div>
               </div>
-              <div className="flex justify-center text-center text-[11px] sm:text-[13px] lg:text-[14px] text-[#455A64]">
+              <div className="flex justify-start text-center text-[11px] sm:text-[13px] lg:text-[14px] text-[#455A64] px-2">
                 You’re creating an account on behalf of a user. Please ensure
                 accuracy. ⚠️
               </div>

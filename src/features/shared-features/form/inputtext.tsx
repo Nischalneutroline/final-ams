@@ -60,7 +60,8 @@ export default function TextInput(props: InputSchema) {
           className={finalLabelCss}
           htmlFor={input}
         >
-          {icon && icon} {label}
+          {icon && icon}
+          {label}
           {showImportant && <span className="text-red-400">*</span>}
         </label>
       )}

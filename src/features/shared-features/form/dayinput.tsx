@@ -171,6 +171,7 @@ export function DateInput(props: InputSchema) {
 
                   error: false,
                   sx: {
+                    // Main container
                     "& .MuiInputBase-root": {
                       borderRadius: "0.375rem", // rounded-md
                       height: {
@@ -183,13 +184,37 @@ export function DateInput(props: InputSchema) {
                       gap: "0.25rem", // gap-1
                       fontSize: "13px",
                       color: "black",
-                      backgroundColor: "#F8F9FA",
-                      borderColor: "#cbd5e0", // border-gray-400
+                      border: "0.001rem solid",
+                      borderColor: "border-gray-400",
                       width: "100%",
                       alignItems: "center",
+                      boxShadow:
+                        "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)", // shadow-md
                     },
+
+                    // Border color override
                     "& .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#cbd5e0", // border-gray-400
+                    },
+
+                    // Input styles (for placeholder)
+                    "& .MuiInputBase-input": {
+                      "::placeholder": {
+                        transform: "translateX(-4px)", // move placeholder to left
+                        color: "#a0aec0", // placeholder-gray-400
+                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", // subtle shadow
+                      },
+                    },
+
+                    // Icon and adornment
+                    "& .MuiInputAdornment-root": {
+                      marginRight: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                    },
+                    "& .MuiIconButton-root": {
+                      padding: "4px",
+                      transform: "translateX(-10px)",
                     },
                   },
                 },
@@ -271,25 +296,50 @@ export function TimeInput(props: InputSchema) {
                   onKeyUp: handleKeyUp,
                   error: false,
                   sx: {
+                    // Main container
                     "& .MuiInputBase-root": {
                       borderRadius: "0.375rem", // rounded-md
                       height: {
-                        xs: "36px", // Default for small screens
-                        sm: "40px", // Medium screens
-                        lg: "45px", // Large screens
+                        xs: "36px",
+                        sm: "40px",
+                        lg: "45px",
                       },
                       display: "flex",
                       px: "0.5rem", // px-2
                       gap: "0.25rem", // gap-1
-                      fontSize: "13px", // Adjust font size
+                      fontSize: "13px",
                       color: "black",
-                      backgroundColor: "#F8F9FA",
-                      borderColor: "#cbd5e0", // border-gray-400
+                      border: "0.001rem solid",
+                      borderColor: "border-gray-400",
                       width: "100%",
                       alignItems: "center",
+                      boxShadow:
+                        "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)", // shadow-md
                     },
+
+                    // Border color override
                     "& .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#cbd5e0", // border-gray-400
+                    },
+
+                    // Input styles (for placeholder)
+                    "& .MuiInputBase-input": {
+                      "::placeholder": {
+                        transform: "translateX(-4px)", // move placeholder to left
+                        color: "", // placeholder-gray-400
+                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", // subtle shadow
+                      },
+                    },
+
+                    // Icon and adornment
+                    "& .MuiInputAdornment-root": {
+                      marginRight: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                    },
+                    "& .MuiIconButton-root": {
+                      padding: "4px",
+                      transform: "translateX(-10px)",
                     },
                   },
                 },

@@ -33,13 +33,25 @@ const AppointmentForm = (props: any) => {
       onSubmit={handleSubmit(onSubmit)}
       className="relative flex flex-col gap-2 sm:gap-4 px-4"
     >
-      <TextInput {...formObj.full_name} />
+      <div className="grid grid-cols-2 w-full">
+        <div className="col-span-1">
+          <TextInput {...formObj.full_name} />
+        </div>
 
-      <TextInput {...formObj.email} />
+        <div className="col-span-1">
+          <TextInput {...formObj.email} />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 w-full">
+        <div className="col-span-1">
+          <TextInput {...formObj.phone_number} />
+        </div>
 
-      <TextInput {...formObj.phone_number} />
+        <div className="col-span-1">
+          <SelectInput {...formObj.service} />
+        </div>
+      </div>
 
-      <SelectInput {...formObj.service} />
       <div className="flex justify-between items-center">
         <DateInput {...formObj.date} />
         <TimeInput {...formObj.time} />

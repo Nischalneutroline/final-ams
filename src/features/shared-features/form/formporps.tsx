@@ -11,13 +11,13 @@ export const fullNameProps = ({ defaultValue }: any) => ({
   defaultValue: defaultValue ?? "",
   icon: (
     <PersonOutlineIcon
-      className="text-gray-400"
+      className="text-[#287AFF]"
       sx={{
         fontSize: {
-          xs: "18px",
-          sm: "20px",
+          xs: "16px",
+          sm: "18px",
           lg: "22px",
-          xl: "24px",
+          xl: "20px",
         },
       }}
     />
