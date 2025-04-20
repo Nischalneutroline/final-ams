@@ -182,6 +182,7 @@ export const adminAppointmentSchema = z.object({
 export type AdminAppointmentFormValues = z.infer<typeof adminAppointmentSchema>;
 
 const TimeSlotSchema = z.object({
+  id: z.string(),
   startTime: z.string().min(1, "Start time is required"),
   endTime: z.string().min(1, "End time is required"),
 });

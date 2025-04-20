@@ -19,7 +19,10 @@ import {
   setEditCustomerFormTrue,
   setEditCustomerId,
 } from "@/state/admin/AdminSlice";
-import { deleteAppointment } from "@/state/admin/AdminServices";
+import {
+  deleteAppointment,
+  retriveAppointment,
+} from "@/state/admin/AdminServices";
 
 interface AppointmentDataTableRowActionsProps<TData> {
   row: Row<TData> | any;
@@ -58,6 +61,7 @@ export function AppointmentDataTableRowActions<TData>({
         <DropdownMenuItem
           onClick={() => {
             dispatch(deleteAppointment(row.original));
+            dispatch(retriveAppointment());
           }}
         >
           Delete

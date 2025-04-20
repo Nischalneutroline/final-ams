@@ -30,7 +30,11 @@ import {
   setEditCustomerFormTrue,
 } from "@/state/admin/AdminSlice";
 import CloseIcon from "@mui/icons-material/Close";
-import { createUser, updateUser } from "@/state/admin/AdminServices";
+import {
+  createUser,
+  retriveUsers,
+  updateUser,
+} from "@/state/admin/AdminServices";
 import { AdminCustomerFormSchema } from "@/state/admin/admin";
 import { passwordProps } from "../../../shared-features/form/formporps";
 import { IdCard } from "lucide-react";
@@ -74,6 +78,7 @@ const EditUserForm = () => {
     dispatch(updateUser(transformedData, id));
     reset();
     dispatch(setEditCustomerFormTrue(false));
+    dispatch(retriveUsers());
   };
 
   //  Ref for closing modal on outside click

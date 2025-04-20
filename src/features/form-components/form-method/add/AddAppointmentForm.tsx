@@ -33,7 +33,11 @@ import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
 import { setAddAppointmentFormTrue } from "@/state/admin/AdminSlice";
 import CloseIcon from "@mui/icons-material/Close";
 import AppointmentForm from "../../forms/admin/AppointmentForm";
-import { createAppointment, retriveUsers } from "@/state/admin/AdminServices";
+import {
+  createAppointment,
+  retriveAppointment,
+  retriveUsers,
+} from "@/state/admin/AdminServices";
 import { AdminAppointmentFormSchema } from "@/state/admin/admin";
 import {
   formContainerCss,
@@ -62,12 +66,14 @@ const AddAppointmentForm = () => {
     console.log("Form Submitted:", data);
     const updatedData = {
       ...data,
+      status: "SCHEDULED",
       userId: data.createdById,
     };
     console.log(updatedData, "transformedData");
     dispatch(createAppointment(data));
     reset();
     dispatch(setAddAppointmentFormTrue(false));
+    dispatch(retriveAppointment());
   };
 
   //  Ref for closing modal on outside click

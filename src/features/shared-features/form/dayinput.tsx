@@ -76,7 +76,7 @@ export function DaysSelection(props: SelectInputSchema) {
       <div
         className={`${
           options.length === 7
-            ? " grid grid-cols-4 sm:flex gap-x-4 gap-y-3 "
+            ? " grid grid-cols-4 sm:grid-cols-5 gap-x-4 gap-y-3 "
             : "flex flex-wrap gap-8"
         }`}
       >

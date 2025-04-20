@@ -93,7 +93,7 @@ const ServiceForm = (props: any) => {
             </div>
           </div>
         </div>
-        <DaysSelection {...formObj.serviceAvailability} />
+        {/* <DaysSelection {...formObj.serviceAvailability} /> */}
 
         <DayAndTimeSelection {...formObj.serviceHourDay} />
 

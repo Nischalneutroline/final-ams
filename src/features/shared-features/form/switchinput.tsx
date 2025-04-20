@@ -4,6 +4,7 @@ import { FormSpanError } from "./error/fromspanerror";
 import { formDivCss, formLabelCss, formInputCss, formErrorCss } from "./props";
 import Switch from "@mui/material/Switch";
 import { useEffect, useState } from "react";
+import { useWatch } from "react-hook-form";
 
 export default function SwitchInput(props: InputSchema) {
   const { common, actions, form, css } = props;
@@ -16,32 +17,24 @@ export default function SwitchInput(props: InputSchema) {
     leftLabel,
     rightLabel,
   } = common;
-  const { register, errors, setValue } = form;
+  const { register, errors, setValue, control } = form;
   const { handleClick, handleKeyUp, handleKeyDown, handleOnChange } =
     actions! || {};
   const { divCss, labelCss, inputCss, errorCss } = css || {};
 
-  // Watch the value inside the form
-
-  const [isChecked, setIsChecked] = useState<boolean>(defaultValue ?? false);
-
+  // Sync defaultValue once
   useEffect(() => {
-    console.log("Default:", defaultValue);
-    setIsChecked(defaultValue ?? false);
-  }, [defaultValue]);
+    setValue(input, defaultValue);
+  }, [defaultValue, input, setValue]);
 
-  useEffect(() => {
-    setValue(input, isChecked); // Ensure form state updates
-  }, [isChecked, setValue, input]);
+  // Watch current form value
+  const isChecked = useWatch({ control, name: input, defaultValue });
 
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(event.target.checked);
-    setValue(input, event.target.checked); // Update form state
-
-    // Trigger custom onChange handler
+    const newChecked = event.target.checked;
+    setValue(input, newChecked);
     if (handleOnChange) handleOnChange(event);
   };
-
   const errorMsg = getFormErrorMsg(errors, input);
 
   // Final CSS values

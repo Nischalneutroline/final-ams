@@ -58,42 +58,10 @@ const AddServiceForm = () => {
           endTime: `1970-01-01T${slot.endTime}:00`,
         })),
       })),
-
-      // Convert file object to JSON-compatible structure
-      coverPhoto: data.coverPhoto?.[0]
-        ? {
-            name: data.coverPhoto[0].name,
-            size: data.coverPhoto[0].size,
-            type: data.coverPhoto[0].type,
-            lastModified: data.coverPhoto[0].lastModified,
-          }
-        : null,
-
-      // If you still want to include availability toggle
     };
 
-    // const convertHHMMToISO = (time: string): string => {
-    //   const [hours, minutes] = time.split(":");
-    //   const date = new Date();
-    //   date.setHours(Number(hours), Number(minutes), 0, 0);
-    //   return date.toISOString();
-    // };
-
-    // const transformedData = {
-    //   ...data,
-    //   estimatedDuration: Number(data.estimatedDuration),
-    //   businessDetailId: data.businessDetailId ?? "your_fallback_id_here", // You can get this from selected business maybe
-    //   serviceAvailability: data.serviceAvailability.map((day: any) => ({
-    //     ...day,
-    //     timeSlots: day.timeSlots.map((slot: any) => ({
-    //       ...slot,
-    //       startTime: convertHHMMToISO(slot.startTime),
-    //       endTime: convertHHMMToISO(slot.endTime),
-    //     })),
-    //   })),
-    // };
-
     dispatch(createService(parsedData));
+    console.log(parsedData, "parsdedData");
     reset();
     dispatch(setAddServiceFormTrue(false));
   };
@@ -135,7 +103,7 @@ const AddServiceForm = () => {
     control,
   } = useForm({
     mode: "onSubmit",
-    resolver: zodResolver(adminServiceSchema),
+    // resolver: zodResolver(adminServiceSchema),
   });
 
   const form = {

@@ -37,6 +37,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import {
   createUser,
+  retriveAppointment,
   updateAppointment,
   updateUser,
 } from "@/state/admin/AdminServices";
@@ -100,6 +101,7 @@ const EditAppointmentForm = () => {
     // reset();
 
     dispatch(setEditAppointmentFormTrue(false));
+    dispatch(retriveAppointment());
   };
 
   //  Ref for closing modal on outside click

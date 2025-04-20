@@ -94,17 +94,6 @@ const EditServiceForm = () => {
           endTime: `${today}T${slot.endTime}:00`,
         })),
       })),
-
-      serviceAvailability: data.serviceAvailability ?? [],
-
-      coverPhoto: data.coverPhoto?.[0]
-        ? {
-            name: data.coverPhoto[0].name,
-            size: data.coverPhoto[0].size,
-            type: data.coverPhoto[0].type,
-            lastModified: data.coverPhoto[0].lastModified,
-          }
-        : null,
     };
 
     console.log(parsedData, "parsedData to send");
