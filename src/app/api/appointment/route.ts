@@ -7,6 +7,7 @@ import {
 import { ZodError } from "zod"
 import { prisma } from "@/lib/prisma"
 import { getAppointmentById } from "@/db/appointment"
+import { createAppointment } from "@/lib/appointment"
 
 //create new appointment
 export async function POST(req: NextRequest) {
@@ -18,8 +19,7 @@ export async function POST(req: NextRequest) {
     const parsedData = appointmentSchema.parse(body)
 
     // Create a new appointment in prisma
-    const newAppointment = await prisma.appointment.create({
-      data: {
+    const newAppointment = await createAppointment({
         customerName: parsedData.customerName,
         email: parsedData.email,
         phone: parsedData.phone,
@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
         isForSelf: parsedData.isForSelf,
         createdById: parsedData.createdById,
         resourceId: parsedData.resourceId,
-      },
     })
 
     if (!newAppointment) {

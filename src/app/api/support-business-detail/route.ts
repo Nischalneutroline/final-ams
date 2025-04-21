@@ -16,39 +16,39 @@ import {
 } from "@/db/supportDetail"
 
 // Dummy database for support business details
-let supportDetails: SupportBusinessDetail[] = [
-  {
-    id: "support-id-123",
-    supportBusinessName: "Tech Solutions Support",
-    supportEmail: "support@techsolutions.com",
-    supportPhone: "+977 1 4002100",
-    supportAddress: "789 Support Street, Kathmandu, Nepal",
-    supportGoogleMap: "https://goo.gl/maps/5678abc",
-    supportAvailability: [
-      {
-        id: "support-availability-id-1",
-        weekDay: WeekDays.MONDAY,
-        type: AvailabilityType.SUPPORT, // Only 'SUPPORT' for Support-specific Availability
-        timeSlots: [
-          {
-            id: "support-time-slot-id-1",
-            startTime: "2025-03-01T08:00:00Z",
-            endTime: "2025-03-01T16:00:00Z",
-          },
-        ],
-      },
-    ],
-    supportHoliday: [
-      {
-        id: "support-holiday-id-1",
-        holiday: WeekDays.SUNDAY,
-        type: HolidayType.SUPPORT, // Only 'SUPPORT' for Support Holidays
-        date: "2025-04-20T00:00:00Z",
-      },
-    ],
-    businessId: "business-id-123", // Link to the primary business
-  },
-]
+// let supportDetails: SupportBusinessDetail[] = [
+//   {
+//     id: "support-id-123",
+//     supportBusinessName: "Tech Solutions Support",
+//     supportEmail: "support@techsolutions.com",
+//     supportPhone: "+977 1 4002100",
+//     supportAddress: "789 Support Street, Kathmandu, Nepal",
+//     supportGoogleMap: "https://goo.gl/maps/5678abc",
+//     supportAvailability: [
+//       {
+//         id: "support-availability-id-1",
+//         weekDay: WeekDays.MONDAY,
+//         type: AvailabilityType.SUPPORT, // Only 'SUPPORT' for Support-specific Availability
+//         timeSlots: [
+//           {
+//             id: "support-time-slot-id-1",
+//             startTime: "2025-03-01T08:00:00Z",
+//             endTime: "2025-03-01T16:00:00Z",
+//           },
+//         ],
+//       },
+//     ],
+//     supportHoliday: [
+//       {
+//         id: "support-holiday-id-1",
+//         holiday: WeekDays.SUNDAY,
+//         type: HolidayType.SUPPORT, // Only 'SUPPORT' for Support Holidays
+//         date: "2025-04-20T00:00:00Z",
+//       },
+//     ],
+//     businessId: "business-id-123", // Link to the primary business
+//   },
+// ]
 
 // **CREATE SupportBusinessDetail**
 export async function POST(req: NextRequest) {

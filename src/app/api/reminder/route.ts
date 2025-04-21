@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getReminderById } from "@/db/reminder";
 
-//
+
 // Create a new reminder
 export async function POST(req: NextRequest) {
   try {
