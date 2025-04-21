@@ -88,7 +88,7 @@ export function NotificationDataTable<TValue>({
 console.log(tableType,"TableType");
   return (
     <div className="space-y-4 lg:max-w-[calc(100vw-120px)]">
-      <NotificationDataTableToolbar table={table}  />
+      <NotificationDataTableToolbar table={table}  setTableType={setTableType}/>
 
       <div className="overflow-y-auto max-w-screen overflow-x-auto  max-h-[300px] sm:max-h-[calc(100vh-320px)] md:max-h-[calc(100vh-280px)] lg:max-h-[calc(100vh-520px)] rounded-md border scrollbar ">
         <Table className="min-w-full text-[11px] sm:text-[13px] lg:text-[14px]">

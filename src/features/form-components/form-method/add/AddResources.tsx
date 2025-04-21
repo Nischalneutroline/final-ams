@@ -58,7 +58,7 @@ const AddStaffResources = () => {
     };
 
     reset();
-    console.log(transformedData, "transformed data");
+
     dispatch(createStaff(transformedData));
     // console.log(formattedServices, "formattedServices");
 
