@@ -69,6 +69,7 @@ export async function GET() {
         reminderOffset: true,
       },
     });
+    console.log('reminders',reminders);
 
     if (reminders.length === 0) {
       return NextResponse.json(

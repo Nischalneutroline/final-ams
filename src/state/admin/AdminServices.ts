@@ -97,6 +97,7 @@ export const createAppointment = createAsyncThunk(
       isForSelf: false,
       bookedById: "cm9gu8ms60000vdg0zdnsxb6z",
       createdById: "cm9gu8ms60000vdg0zdnsxb6z",
+      status: "SCHEDULED",
     };
     console.log("Transformed Data:", transformed);
     try {
@@ -326,7 +327,7 @@ export const createSupportBusinessDetails = createAsyncThunk(
     };
     try {
       const res = await axios.post(
-        "/api/support-business-deatil",
+        "/api/support-business-detail",
         transformedData
       );
       return res.data;
@@ -425,7 +426,9 @@ export const deleteFAQ = createAsyncThunk(
   async (formData: any, { rejectWithValue }) => {
     console.log(formData, "inside Faq");
     try {
-      const res = await axios.delete("/api/faq", formData);
+      const res = await axios.delete("/api/faq", {
+        data: formData,
+      });
       return res.data;
     } catch (err: any) {
       console.log(err);
@@ -477,7 +480,9 @@ export const deleteTicket = createAsyncThunk(
   async (formData: any, { rejectWithValue }) => {
     console.log(formData, "inside ticket");
     try {
-      const res = await axios.delete("/api/ticket", formData);
+      const res = await axios.delete("/api/ticket", {
+        data: formData,
+      });
       return res.data;
     } catch (err: any) {
       console.log(err);
