@@ -31,21 +31,33 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    await inngestClient.send({
-      name: "announcement/send",
-      data: {
-        id: newAnnouncement.id,
-        lastUpdate: newAnnouncement.updatedAt.getTime(),
-      },
-      ts: new Date(newAnnouncement.scheduledAt).getTime(),
-    });
-    return NextResponse.json(
-      {
-        message: "Announcement or offer created successfully",
-        announcement: newAnnouncement,
-      },
-      { status: 201 }
-    );
+    try {
+      await inngestClient.send({
+        name: "announcement/send",
+        data: {
+          id: newAnnouncement.id,
+          lastUpdate: newAnnouncement.updatedAt.getTime(),
+        },
+        ts: new Date(newAnnouncement.scheduledAt).getTime(),
+      });
+      return NextResponse.json(
+        {
+          message: "Announcement or offer created and scheduled successfully",
+          announcement: newAnnouncement,
+        },
+        { status: 201 }
+      );
+    } catch (scheduleError) {
+      // If scheduling fails, still return a 201 but with a warning
+
+      return NextResponse.json(
+        {
+          message: "Announcement or offer created, but scheduling failed.",
+          announcement: newAnnouncement,
+        },
+        { status: 201 }
+      );
+    }
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -126,22 +138,34 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    await inngestClient.send({
-      name: "announcement/send",
-      data: {
-        id: updatedAnnouncement.id,
-        lastUpdate: updatedAnnouncement.updatedAt.getTime(),
-      },
-      ts: new Date(updatedAnnouncement.scheduledAt).getTime(),
-    });
+    try {
+      await inngestClient.send({
+        name: "announcement/send",
+        data: {
+          id: updatedAnnouncement.id,
+          lastUpdate: updatedAnnouncement.updatedAt.getTime(),
+        },
+        ts: new Date(updatedAnnouncement.scheduledAt).getTime(),
+      });
 
-    return NextResponse.json(
-      {
-        message: "Announcement updated successfully",
-        announcement: updatedAnnouncement,
-      },
-      { status: 200 }
-    );
+      return NextResponse.json(
+        {
+          message: "Announcement updated successfully",
+          announcement: updatedAnnouncement,
+        },
+        { status: 200 }
+      );
+    } catch (scheduleError) {
+      // If scheduling fails, still return a 201 but with a warning
+
+      return NextResponse.json(
+        {
+          message: "Announcement or offer updated, but scheduling failed.",
+          announcement: updatedAnnouncement,
+        },
+        { status: 201 }
+      );
+    }
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
