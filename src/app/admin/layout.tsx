@@ -26,6 +26,7 @@ import SupportAndFaqPage from "@/features/form-components/form-method/add/AddSup
 import BusinessDetailsPage from "@/features/form-components/form-method/add/AddBusinessDetail";
 import AddResources from "@/features/form-components/form-method/add/AddResources";
 import EditStaffResources from "@/features/form-components/form-method/edit/EditResources";
+import EditTicket from "@/features/form-components/form-method/edit/EditTicket";
 
 export default function AdminLayout({
   children,
@@ -190,6 +191,7 @@ export default function AdminLayout({
         <BusinessDetailsPage />
         <AddResources />
         <EditStaffResources />
+        <EditTicket />
 
         <div
           className="absolute  min-h-[calc(100vh-376px)] lg:ml-[90px]

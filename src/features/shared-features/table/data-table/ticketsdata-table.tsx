@@ -26,9 +26,9 @@ import {
 } from "../components/ui/table";
 
 import { DataTablePagination } from "../data-table-pagination";
-import { CustomerDataTableToolbar } from "../data-table-toolbar/customerdata-table-toolbar";
+
 import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
-import { retriveUsers } from "@/state/admin/AdminServices";
+import { retriveTicket } from "@/state/admin/AdminServices";
 import { useEffect } from "react";
 import { TicketsDataTableToolbar } from "../data-table-toolbar/ticketsdata-table-toolbar";
 
@@ -43,19 +43,22 @@ export function TicketsDataTable<TValue>({ columns }: DataTableProps<TValue>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const { isSuccess } = useAppSelector(
-    (state: RootState) => state.admin.admin.user.add.response
-  );
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(retriveUsers());
-  }, [dispatch, isSuccess]);
+    dispatch(retriveTicket());
+  }, []);
 
   const { details } = useAppSelector(
-    (state: RootState) => state.admin.admin.user.view.response
+    (state: RootState) => state.admin.admin.ticket.view.response
   );
-  const data = details;
+
+ const data = React.useMemo(() => {
+   return Array.isArray(details)
+     ? details.filter((d: any) => d.userType === "USER")
+     : [];
+ }, [details]);
 
   const table = useReactTable({
     data,

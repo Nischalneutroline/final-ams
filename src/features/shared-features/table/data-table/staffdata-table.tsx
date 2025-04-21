@@ -57,6 +57,7 @@ export function StaffDataTable<TValue>({ columns }: DataTableProps<TValue>) {
     (state: RootState) => state.admin.admin.resources.staff.view.response
   );
   const data = details;
+  console.log(data, "data in staff");
 
   const table = useReactTable({
     data,

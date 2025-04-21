@@ -29,6 +29,7 @@ import {
 import SwitchInput from "@/features/shared-features/form/switchinput";
 import { DayAndTimeSelection } from "@/features/shared-features/form/dayandtimeselection";
 import { formOuterDivCss } from "@/features/shared-features/form/props";
+import { createTicket } from "@/state/admin/AdminServices";
 
 const AdminSupportForm = () => {
   // Redux Variable
@@ -36,7 +37,22 @@ const AdminSupportForm = () => {
 
   // Submit handler
   const onSubmit = (data: any) => {
-    console.log("Transformed data:", data);
+    const transformedData = {
+      userType: "ADMIN",
+      subject: data?.subject,
+      ticketDescription: data?.ticketDescription,
+      category: data?.category,
+      priority: data?.priority,
+      status: "OPEN",
+      userId: "cm9gu8ms60000vdg0zdnsxb6z",
+      initiatedById: "cm9gu8ms60000vdg0zdnsxb6z",
+      resolutionDescription: "",
+      proofFiles: data?.attachment || "",
+      assignedTo: "",
+    };
+    console.log(transformedData);
+    reset();
+    dispatch(createTicket(transformedData));
   };
 
   // React-hook-form with Zod validation
@@ -106,6 +122,7 @@ const AdminSupportForm = () => {
         type: "select",
       }),
       options: notificationOptions,
+      multiple: false,
       ...remaining,
     },
     subject: {
@@ -119,9 +136,9 @@ const AdminSupportForm = () => {
 
       ...remaining,
     },
-    description: {
+    ticketDescription: {
       common: emptyFormProps({
-        input: "description",
+        input: "ticketDescription",
         label: " Description",
         placeholder: "Enter the Issue in Detail",
         showImportant: true,
@@ -130,9 +147,9 @@ const AdminSupportForm = () => {
 
       ...remaining,
     },
-    attachment: {
+    proofFiles: {
       common: emptyFormProps({
-        input: "attachment",
+        input: "proofFiles",
         label: " Attachment (if any)",
         placeholder: "Upload Supporting Document",
         showImportant: true,
@@ -141,14 +158,16 @@ const AdminSupportForm = () => {
 
       ...remaining,
     },
-    priorityLevel: {
+    priority: {
       common: emptyFormProps({
-        input: "priorityLevel",
+        input: "priority",
         label: " Priority Level",
         placeholder: "Select Priority Level",
         showImportant: true,
       }),
       options: priorityLevelOptions,
+      multiple: false,
+
       ...remaining,
     },
   };
@@ -186,13 +205,13 @@ const AdminSupportForm = () => {
             </div>
           </div>
           <TextInput {...formObj.subject} />
-          <TextInput {...formObj.description} />
+          <TextInput {...formObj.ticketDescription} />
           <div className="grid grid-cols-1 sm:grid-cols-2">
             <div className="cols-span-1">
-              <TextInput {...formObj.attachment} />
+              <TextInput {...formObj.proofFiles} />
             </div>
             <div className="cols-span-1">
-              <SelectInput {...formObj.priorityLevel} />
+              <SelectInput {...formObj.priority} />
             </div>
           </div>
         </div>

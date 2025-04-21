@@ -30,8 +30,11 @@ import {
   formTitleDivCss,
 } from "@/features/shared-features/form/props";
 import SelectInput from "@/features/shared-features/form/selectinput";
+import { createTicket } from "@/state/admin/AdminServices";
 
 const AddTicket = () => {
+  const dispatch = useAppDispatch();
+
   // On submit funciton
   const onSubmit = (data: any) => {
     const transformedData = {
@@ -42,13 +45,17 @@ const AddTicket = () => {
       priority: data?.priority,
       status: "OPEN",
       userId: "cm9gu8ms60000vdg0zdnsxb6z",
+      initiatedById: "cm9gu8ms60000vdg0zdnsxb6z",
+      resolutionDescription: "",
+      proofFiles: "",
+      assignedTo: "",
     };
     console.log(transformedData);
     reset();
+    dispatch(createTicket(transformedData));
     dispatch(setAddTicketFormTrue(false));
   };
 
-  const dispatch = useAppDispatch();
   const { isFlag } = useAppSelector(
     (state: RootState) => state.admin.admin.ticket.add
   );
@@ -128,6 +135,8 @@ const AddTicket = () => {
         placeholder: "Select an issue category.",
         showImportant: true,
       }),
+      multiple: false,
+
       options: ticketCategoryOptions,
       ...remaining,
     },
@@ -138,6 +147,8 @@ const AddTicket = () => {
         placeholder: "Select an issue priority.",
         showImportant: true,
       }),
+      multiple: false,
+
       options: priorityLevelOptions,
       ...remaining,
     },

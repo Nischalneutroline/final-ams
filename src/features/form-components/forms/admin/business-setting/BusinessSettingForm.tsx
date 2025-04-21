@@ -33,6 +33,7 @@ import SwitchInput from "@/features/shared-features/form/switchinput";
 import { DayAndTimeSelection } from "@/features/shared-features/form/dayandtimeselection";
 import { createBusiness, retrieveBusiness } from "@/state/admin/AdminServices";
 import { formOuterDivCss } from "@/features/shared-features/form/props";
+import { ServiceAvailability } from "@/features/service/types/types";
 
 const BusinessSettingForm = () => {
   // Redux Variable
@@ -55,7 +56,7 @@ const BusinessSettingForm = () => {
       email: data.email,
       phone: data.phone,
       website: `https://${data.website}`,
-      businessRegistrationNumber: data.registrationNumber,
+      businessRegistrationNumber: data.businessRegistrationNumber,
       status: data.status,
       address: [
         {
@@ -118,6 +119,22 @@ const BusinessSettingForm = () => {
     control,
     trigger,
   };
+  const transformAvailability = (apiData: any[]): ServiceAvailability[] => {
+    return apiData?.map((entry) => ({
+      weekDay: entry.weekDay,
+      timeSlots: entry.timeSlots.map(
+        (slot: { id: string; startTime: string; endTime: string }) => ({
+          id: slot.id,
+          startTime: new Date(slot.startTime).toISOString().substring(11, 16), // format to HH:mm
+          endTime: new Date(slot.endTime).toISOString().substring(11, 16), // format to HH:mm
+        })
+      ),
+    }));
+  };
+
+  const holidayDays = dataToEdit?.holiday?.map((h: any) => h.holiday) || [];
+  const addressValue = dataToEdit?.address;
+  console.log(addressValue, "addressValue");
 
   const remaining = { actions: commonActions, form, css: {} };
 
@@ -164,7 +181,6 @@ const BusinessSettingForm = () => {
         input: "industry",
         label: "Company/Industry ",
         defaultValue: dataToEdit?.industry,
-
         placeholder: "Select Industry",
         showImportant: true,
         type: "select",
@@ -215,7 +231,6 @@ const BusinessSettingForm = () => {
         input: "country",
         label: "Country",
         placeholder: "Enter your Country name",
-        defaultValue: dataToEdit?.address[0].country,
 
         type: "text",
         showImportant: true,
@@ -228,8 +243,6 @@ const BusinessSettingForm = () => {
       common: roleProps({
         input: "street",
         label: "Street",
-        defaultValue: dataToEdit?.address[0].street,
-
         placeholder: "Enter your Street Name",
         type: "text",
         showImportant: true,
@@ -242,8 +255,6 @@ const BusinessSettingForm = () => {
         input: "city",
         label: "City ",
         placeholder: "Enter your City Name",
-        defaultValue: dataToEdit?.address[0].city,
-
         type: "text",
         showImportant: true,
       }),
@@ -255,8 +266,6 @@ const BusinessSettingForm = () => {
         input: "zipCode",
         label: "Zip Code",
         placeholder: "Enter your Zip Code",
-        defaultValue: dataToEdit?.address[0].zipCode,
-
         type: "text",
         showImportant: true,
       }),
@@ -268,20 +277,17 @@ const BusinessSettingForm = () => {
         input: "googleMap",
         label: "Google Map",
         placeholder: "Upload Your Map",
-        defaultValue: dataToEdit?.address[0].googleMap,
-
         showImportant: true,
         type: "text",
       }),
 
       ...remaining,
     },
-    registrationNumber: {
+    businessRegistrationNumber: {
       common: emptyFormProps({
-        input: "registrationNumber",
+        input: "businessRegistrationNumber",
         label: "Business Registration Number",
-        defaultValue: dataToEdit?.registrationNumber,
-
+        defaultValue: dataToEdit?.businessRegistrationNumber,
         placeholder: "Enter Business Registration Number",
         showImportant: true,
       }),
@@ -292,7 +298,6 @@ const BusinessSettingForm = () => {
         input: "status",
         label: "Business Status",
         defaultValue: dataToEdit?.status,
-
         placeholder: "Select your current business Status",
         showImportant: true,
       }),
@@ -315,8 +320,8 @@ const BusinessSettingForm = () => {
         label: "Business Availability",
         placeholder: "Enter the business time",
         showImportant: true,
+        defaultValue: transformAvailability(dataToEdit?.businessAvailability),
       }),
-
       ...remaining,
       css: { divCss: "min-h-[150px] gap-y-4" },
     },
@@ -324,7 +329,7 @@ const BusinessSettingForm = () => {
       common: emptyFormProps({
         input: "holiday",
         label: "Holiday",
-
+        defaultValue: holidayDays,
         showImportant: true,
       }),
       options: weekOptions,
@@ -368,17 +373,22 @@ const BusinessSettingForm = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 ">
-            <TextInput {...formObj.country} />
-            <TextInput {...formObj.street} />
-            <TextInput {...formObj.city} />
-            <TextInput {...formObj.zipCode} />
-            <TextInput {...formObj.googleMap} />
-          </div>
+          {dataToEdit?.address.map((addr: any, index: number) => {
+            console.log(index, "number of adress");
+            return (
+              <div key={index} className="grid grid-cols-1 sm:grid-cols-2 ">
+                <TextInput {...formObj.country} defaultValue={addr?.country} />
+                <TextInput {...formObj.street} />
+                <TextInput {...formObj.city} />
+                <TextInput {...formObj.zipCode} />
+                <TextInput {...formObj.googleMap} />
+              </div>
+            );
+          })}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 ">
             <div className="col-span-1">
-              <TextInput {...formObj.registrationNumber} />
+              <TextInput {...formObj.businessRegistrationNumber} />
             </div>
             <div className="col-span-1">
               <SelectInput {...formObj.status} />

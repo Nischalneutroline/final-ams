@@ -18,6 +18,7 @@ export default function TextInput(props: InputSchema) {
   // Props variables
   const { input, label, defaultValue, placeholder, showImportant, icon, type } =
     common;
+
   const { register, errors, trigger } = form; // Include trigger
   const { handleClick, handleKeyUp, handleKeyDown, handleOnChange } =
     actions! || {};

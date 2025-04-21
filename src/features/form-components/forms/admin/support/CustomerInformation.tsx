@@ -24,8 +24,6 @@ import { formOuterDivCss } from "@/features/shared-features/form/props";
 import { createSupportBusinessDetails } from "@/state/admin/AdminServices";
 
 const CustomerInfomationForm = () => {
-  const [reminderType, setReminderType] = useState("REMINDER");
-
   // Redux Variable
   const dispatch = useAppDispatch();
 

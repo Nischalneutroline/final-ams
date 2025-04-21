@@ -394,9 +394,10 @@ export function HoliDaysSelection(props: SelectInputSchema) {
   // Props variables
   const { input, label, defaultValue, placeholder, showImportant, icon, type } =
     common;
+  console.log(defaultValue, "default Holiday value");
   const { setValue, errors } = form;
   const { divCss, labelCss, errorCss } = css!;
-  console.log(defaultValue, "holi Selecion");
+
   // States
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const daysOfWeek = options;

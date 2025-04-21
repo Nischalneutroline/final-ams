@@ -1,11 +1,10 @@
 "use client";
 
 import {
+  addTicketBtnProps,
   addUserBtnProps,
   commonActions,
-  emailProps,
   fullNameProps,
-  roleProps,
 } from "@/features/shared-features/form/formporps";
 
 import { useForm } from "react-hook-form";
@@ -18,8 +17,8 @@ import Button from "@/features/shared-features/common/button";
 import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
 import {
   setAddFAQFormTrue,
-  setAddStaffResourceTrue,
-  setEditStaffResourceTrue,
+  setAddTicketFormTrue,
+  setEditTicketTrue,
 } from "@/state/admin/AdminSlice";
 import { useEffect, useRef } from "react";
 import {
@@ -31,44 +30,40 @@ import {
   formTitleCss,
   formTitleDivCss,
 } from "@/features/shared-features/form/props";
-import { retriveService, updateStaff } from "@/state/admin/AdminServices";
 import SelectInput from "@/features/shared-features/form/selectinput";
+import { createTicket, updateTicket } from "@/state/admin/AdminServices";
 
-const EditStaffResources = () => {
+const EditTicket = () => {
+  const dispatch = useAppDispatch();
+
   // On submit funciton
   const onSubmit = (data: any) => {
-    dispatch(updateStaff(data));
-
+    //   const updatedData
+    const updatedData = {
+      subject: data.subject ?? dataToEdit.subject,
+      ticketDescription: data.ticketDescription ?? dataToEdit.ticketDescription,
+      category: data.category ?? dataToEdit.category,
+      priority: data.priority ?? dataToEdit.priority,
+    };
+    const transformedData = { ...dataToEdit, ...updatedData };
+    console.log(transformedData);
     reset();
-    dispatch(setEditStaffResourceTrue(false));
+    dispatch(updateTicket(transformedData));
+    dispatch(setEditTicketTrue(false));
   };
 
-  const { details } = useAppSelector(
-    (state: RootState) => state.admin.admin.service.view.response
-  );
-  const { details: resourceDetails } = useAppSelector(
-    (state: RootState) => state.admin.admin.resources.staff.view.response
-  );
-  const dispatch = useAppDispatch();
   const { isFlag } = useAppSelector(
-    (state: RootState) => state.admin.admin.resources.staff.edit
+    (state: RootState) => state.admin.admin.ticket.edit
   );
-
   const { id } = useAppSelector(
-    (state: RootState) => state.admin.platform.resource._edit_ResourceForm
+    (state: RootState) => state.admin.platform.ticket._edit_TicketForm
   );
-  const dataToEdit = resourceDetails?.find((u: any) => u.id === id);
 
-  function getServiceOptions(
-    services: { id: string; title: string; status: string }[]
-  ) {
-    return services
-      .filter((service) => service.status === "ACTIVE")
-      .map((service) => ({
-        label: service.title,
-        value: service.id,
-      }));
-  }
+  const { details } = useAppSelector(
+    (state: RootState) => state.admin.admin.ticket.view.response
+  );
+
+  const dataToEdit = details?.find((u: any) => u.id === id);
 
   // React-hook-form with Zod validation
   const {
@@ -99,69 +94,76 @@ const EditStaffResources = () => {
 
   const remaining = { actions: commonActions, form, css: {} };
 
-  const serviceOptions = getServiceOptions(details);
+  const ticketCategoryOptions = [
+    { label: "Technical", value: "TECHNICAL" },
+    { label: "Billing", value: "BILLING" },
+    { label: "Account", value: "ACCOUNT" },
+    { label: "General", value: "GENERAL" },
+    { label: "Support", value: "SUPPORT" },
+    { label: "Security", value: "SECURITY" },
+    { label: "Maintenance", value: "MAINTENANCE" },
+    { label: "Feedback", value: "FEEDBACK" },
+  ];
+
+  const priorityLevelOptions = [
+    { label: "Low", value: "LOW" },
+    { label: "Medium", value: "MEDIUM" },
+    { label: "High", value: "HIGH" },
+    { label: "Urgent", value: "URGENT" },
+  ];
 
   const formObj = {
-    name: {
+    subject: {
       common: fullNameProps({
-        input: "name",
-        label: "Staff Name",
-        placeholder: "Enter Staff Name",
+        input: "subject",
+        label: "Subject",
+        placeholder: "Enter Issue Subject.",
         showImportant: true,
-        defaultValue: dataToEdit?.name,
+        defaultValue: dataToEdit?.subject,
         type: "text",
       }),
       ...remaining,
     },
-    email: {
-      common: emailProps({
-        defaultValue: dataToEdit?.email,
-      }),
-      ...remaining,
-    },
-    phone: {
-      common: roleProps({
-        input: "phone",
-        label: "Phone",
-        defaultValue: dataToEdit?.phone,
+    ticketDescription: {
+      common: fullNameProps({
+        input: "ticketDescription",
+        label: "Dscription",
+        placeholder: "Enter Issue Descrition.",
+        defaultValue: dataToEdit?.ticketDescription,
 
-        placeholder: "Enter Your Phone Number",
         showImportant: true,
+        type: "textbox",
       }),
       ...remaining,
     },
-    role: {
-      common: roleProps({
-        defaultValue: dataToEdit?.role,
-      }),
-      ...remaining,
-    },
-    address: {
-      common: roleProps({
-        input: "address",
-        label: "Address",
-        placeholder: "Enter Full Address",
-        defaultValue: dataToEdit?.address,
+    category: {
+      common: fullNameProps({
+        input: "category",
+        label: "Category",
+        placeholder: "Select an issue category.",
+        defaultValue: dataToEdit?.category,
 
         showImportant: true,
       }),
+      multiple: false,
+
+      options: ticketCategoryOptions,
       ...remaining,
     },
-    services: {
-      common: roleProps({
-        input: "services",
-        label: "Linked Services",
-        placeholder: "Select all the appropriate services.",
+    priority: {
+      common: fullNameProps({
+        input: "priority",
+        label: "Priority",
+        placeholder: "Select an issue priority.",
+        defaultValue: dataToEdit?.priority,
         showImportant: true,
       }),
-      options: serviceOptions,
-      multiple: true,
-
+      multiple: false,
+      options: priorityLevelOptions,
       ...remaining,
     },
   };
   useEffect(() => {
-    dispatch(retriveService());
     const handleClickOutside = (event: MouseEvent) => {
       const popup = document.querySelector(
         '.MuiPickersPopper-root, [role="dialog"]'
@@ -172,7 +174,7 @@ const EditStaffResources = () => {
         formRef.current?.contains(event.target as Node) ?? false;
 
       if (!clickedInsideForm && !clickedInsideCalendar) {
-        dispatch(setEditStaffResourceTrue(false));
+        dispatch(setAddFAQFormTrue(false));
       }
     };
     if (isFlag) {
@@ -185,7 +187,6 @@ const EditStaffResources = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isFlag]);
-
   return (
     <AnimatePresence>
       {isFlag && (
@@ -196,35 +197,36 @@ const EditStaffResources = () => {
             animate={{ y: 0, scale: [0.9, 1.02, 1] }}
             exit={{ y: 50, scale: 0.9 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`${formSmallContainerCss} lg:h-[70%] lg:w-[50%]`}
+            className={`${formSmallContainerCss} lg:h-[60%]`}
           >
             <div className={formTitleDivCss}>
-              <div className={formTitleCss}>Edit Staff Member</div>
+              <div className={formTitleCss}>Add New FAQ</div>
               <div className={formSubTitleCss}>
-                You’re editing an member account on behalf of a staff. Please
-                ensure accuracy. ⚠️
+                You’re creating an account on behalf of a user. Please ensure
+                accuracy. ⚠️
+              </div>
+              <div
+                className="absolute top-3 right-4 text-red-600 cursor-pointer"
+                onClick={(e: any) => dispatch(setAddTicketFormTrue(false))}
+              >
+                <CloseIcon />
               </div>
             </div>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className={`${formOuterDivCss} overflow-y-auto lg:overflow-y-hidden scrollbar gap-8`}
+              className={`${formOuterDivCss} lg:gap-8 overflow-y-hidden`}
             >
-              <div className="flex-col gap-3 flex">
-                <TextInput {...formObj.name} />
-
+              <div className="flex flex-col gap-4">
+                <TextInput {...formObj.subject} />
+                <TextInput {...formObj.ticketDescription} />
                 <div className="grid grid-cols-1 sm:grid-cols-2">
-                  <TextInput {...formObj.email} />
-                  <TextInput {...formObj.phone} />
+                  <SelectInput {...formObj.category} />
+                  <SelectInput {...formObj.priority} />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2">
-                  <TextInput {...formObj.role} />
-                  <TextInput {...formObj.address} />
-                </div>
-
-                <SelectInput {...formObj.services} />
               </div>
+
               <div className=" flex flex-col mb-4  justify-center gap-4">
-                <Button {...addUserBtnProps} />
+                <Button {...addTicketBtnProps} />
               </div>
             </form>
           </motion.div>
@@ -234,4 +236,4 @@ const EditStaffResources = () => {
   );
 };
 
-export default EditStaffResources;
+export default EditTicket;

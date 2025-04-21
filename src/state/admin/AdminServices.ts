@@ -241,10 +241,28 @@ export const retrieveBusiness = createAsyncThunk(
     }
   }
 );
+export const updateBusiness = createAsyncThunk(
+  "admin/business/update",
+  async (formData: any) => {
+    console.log(formData, "inside Business");
+    // const { resourceId, ...payload } = formData;
+    const response = await axios.put(`/api/business-detail`, formData);
+    return response.data;
+  }
+);
+export const deleteBusiness = createAsyncThunk(
+  "admin/business/delete",
+  async (formData: any) => {
+    console.log(formData, "inside Business");
+    // const { resourceId, ...payload } = formData;
+    const response = await axios.delete(`/api/business-detail`, formData);
+    return response.data;
+  }
+);
 
 // Resource Staff/Admin
 export const createStaff = createAsyncThunk(
-  "admin/business/add",
+  "admin/staff/add",
   async (formData: AdminResourceFormSchema, { rejectWithValue }) => {
     const transformedData = {
       ...formData,
@@ -261,7 +279,7 @@ export const createStaff = createAsyncThunk(
 );
 
 export const retriveStaff = createAsyncThunk(
-  "admin/resource/staff/view", // action type
+  "admin/staff/view", // action type
   async (_, { rejectWithValue }) => {
     try {
       // Assuming the API endpoint for viewing a user is /api/users/{id}
@@ -273,8 +291,21 @@ export const retriveStaff = createAsyncThunk(
   }
 );
 
+export const updateStaff = createAsyncThunk(
+  "admin/staff/edit", // action type
+  async (formData, { rejectWithValue }) => {
+    try {
+      // Assuming the API endpoint for viewing a user is /api/users/{id}
+      const response = await axios.put(`/api/resource`, formData);
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 export const deleteStaff = createAsyncThunk(
-  "admin/resource/staff/delete",
+  "admin/staff/delete",
   async (payload) => {
     console.log("Deleting appointment with payload:", payload);
     const response = await axios.delete(`/api/resource`, {
@@ -298,6 +329,155 @@ export const createSupportBusinessDetails = createAsyncThunk(
         "/api/support-business-deatil",
         transformedData
       );
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+export const updateSupportBusinessDetails = createAsyncThunk(
+  "admin/support-business-detail/edit",
+  async (formData: any, { rejectWithValue }) => {
+    const transformedData = {
+      ...formData,
+      businessId: "cm9gvwy4s0003vdg0f24wf178",
+    };
+    try {
+      const res = await axios.put(
+        "/api/support-business-deatil",
+        transformedData
+      );
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const retriveSupportBusinessDetails = createAsyncThunk(
+  "admin/support-business-detail/view",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.get("/api/support-business-deatil");
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+export const deleteSupportBusinessDetails = createAsyncThunk(
+  "admin/support-business-detail/delete",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.delete("/api/support-business-deatil", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+// Faq
+export const retriveFAQ = createAsyncThunk(
+  "admin/faq/view",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get("/api/faq");
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const createFAQ = createAsyncThunk(
+  "admin/faq/add",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.post("/api/faq", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const updateFAQ = createAsyncThunk(
+  "admin/faq/add",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.put("/api/faq", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+export const deleteFAQ = createAsyncThunk(
+  "admin/faqs/delete",
+  async (formData: any, { rejectWithValue }) => {
+    console.log(formData, "inside Faq");
+    try {
+      const res = await axios.delete("/api/faq", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+// Tickets
+export const retriveTicket = createAsyncThunk(
+  "admin/ticket/view",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get("/api/ticket");
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const createTicket = createAsyncThunk(
+  "admin/ticket/add",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.post("/api/ticket", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const updateTicket = createAsyncThunk(
+  "admin/ticket/update",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.put("/api/ticket", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+export const deleteTicket = createAsyncThunk(
+  "admin/ticket/delete",
+  async (formData: any, { rejectWithValue }) => {
+    console.log(formData, "inside ticket");
+    try {
+      const res = await axios.delete("/api/ticket", formData);
       return res.data;
     } catch (err: any) {
       console.log(err);

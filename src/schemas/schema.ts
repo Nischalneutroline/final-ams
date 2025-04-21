@@ -127,6 +127,7 @@ export interface InputSchema
 
 export interface SelectInputSchema extends InputSchema {
   options: OptionSchema[];
+  multiple: boolean;
 }
 
 export interface AuthFormContainerSchema

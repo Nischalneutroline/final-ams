@@ -44,10 +44,10 @@ export function TicketsDataTableToolbar<TData>({
     <div className="flex flex-row sm:flex-wrap items-center justify-between gap-1">
       <div className="flex flex-wrap items-center gap-2 flex-1">
         <Input
-          placeholder="Filter by Name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter by Subject..."
+          value={(table.getColumn("subject")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
-            table.getColumn("name")?.setFilterValue(event.target.value);
+            table.getColumn("subject")?.setFilterValue(event.target.value);
           }}
           className="h-[30px] sm:h-[35px] lg:h-[36px] w-[200px] sm:w-[150px] md:w-[200px] lg:w-[250px] text-[12px] md:text-[14px] lg:text-[14px]"
         />
@@ -74,29 +74,42 @@ export function TicketsDataTableToolbar<TData>({
               Category
             </DropdownMenuCheckboxItem> */}
             <DropdownMenuCheckboxItem
-              checked={selectedFilters.includes("createdAt")}
+              checked={selectedFilters.includes("category")}
               onCheckedChange={(checked) => {
                 setSelectedFilters((prev) =>
                   checked
-                    ? [...prev, "createdBy"]
-                    : prev.filter((f) => f !== "createdAt")
+                    ? [...prev, "category"]
+                    : prev.filter((f) => f !== "category")
                 );
               }}
             >
-              Created By
+              Categories
             </DropdownMenuCheckboxItem>
 
             <DropdownMenuCheckboxItem
-              checked={selectedFilters.includes("totalAppointments")}
+              checked={selectedFilters.includes("priority")}
               onCheckedChange={(checked) => {
                 setSelectedFilters((prev) =>
                   checked
-                    ? [...prev, "totalAppointments"]
-                    : prev.filter((f) => f !== "totalAppointments")
+                    ? [...prev, "priority"]
+                    : prev.filter((f) => f !== "priority")
                 );
               }}
             >
-              Total Appointments
+              Priority
+            </DropdownMenuCheckboxItem>
+
+            <DropdownMenuCheckboxItem
+              checked={selectedFilters.includes("status")}
+              onCheckedChange={(checked) => {
+                setSelectedFilters((prev) =>
+                  checked
+                    ? [...prev, "status"]
+                    : prev.filter((f) => f !== "status")
+                );
+              }}
+            >
+              Status
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -109,23 +122,30 @@ export function TicketsDataTableToolbar<TData>({
             options={categories}
           />
         )} */}
-        {selectedFilters.includes("createdBy") &&
-          table.getColumn("createdBy") && (
+        {selectedFilters.includes("category") &&
+          table.getColumn("category") && (
             <DataTableFacetedFilter
-              column={table.getColumn("createdBy")}
-              title="Created By"
+              column={table.getColumn("category")}
+              title="Categories"
               options={categories}
             />
           )}
 
-        {selectedFilters.includes("totalAppointments") &&
-          table.getColumn("totalAppointments") && (
+        {selectedFilters.includes("priority") &&
+          table.getColumn("priority") && (
             <DataTableFacetedFilter
-              column={table.getColumn("totalAppointments")}
-              title="Total Appointments"
+              column={table.getColumn("priority")}
+              title="Priority"
               options={totalAppointment}
             />
           )}
+        {selectedFilters.includes("status") && table.getColumn("status") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("status")}
+            title="Status"
+            options={totalAppointment}
+          />
+        )}
 
         {/* Reset Filters Button */}
         {isFiltered && (

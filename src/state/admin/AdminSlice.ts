@@ -11,13 +11,17 @@ import {
   createAppointment,
   createService,
   createSupportBusinessDetails,
+  createTicket,
   createUser,
   retrieveBusiness,
   retriveAppointment,
+  retriveFAQ,
   retriveService,
   retriveStaff,
+  retriveTicket,
   retriveUsers,
   updateAppointment,
+  updateTicket,
   updateUser,
 } from "./AdminServices";
 
@@ -366,6 +370,47 @@ const initialState: AdminSliceSchema = {
         details: [],
       },
     },
+    ticket: {
+      _add_TicketForm: {
+        id: null,
+        input: {
+          userType: "",
+          subject: "",
+          ticketDescription: "",
+          category: "",
+          priority: "",
+          status: "",
+          userId: "",
+        },
+        details: [],
+      },
+      _edit_TicketForm: {
+        id: null,
+        input: {
+          userType: "",
+          subject: "",
+          ticketDescription: "",
+          category: "",
+          priority: "",
+          status: "",
+          userId: "",
+        },
+        details: [],
+      },
+      _view_TicketForm: {
+        id: null,
+        input: {
+          userType: "",
+          subject: "",
+          ticketDescription: "",
+          category: "",
+          priority: "",
+          status: "",
+          userId: "",
+        },
+        details: [],
+      },
+    },
   },
   admin: {
     user: InitialServiceData,
@@ -483,6 +528,12 @@ const adminSlice = createSlice({
     },
     setEditStaffId: (state, action) => {
       state.platform.resource._edit_ResourceForm.id = action.payload;
+    },
+    setEditTicketTrue: (state, action) => {
+      state.admin.ticket.edit.isFlag = action.payload;
+    },
+    setEditTicketId: (state, action) => {
+      state.platform.ticket._edit_TicketForm.id = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -685,6 +736,72 @@ const adminSlice = createSlice({
           "User creation failed.";
         state.admin.supportBusinessDetails.add.response.error =
           action.payload as string;
+      })
+      .addCase(retriveFAQ.pending, (state) => {
+        state.admin.faq.view.response.isLoading = true;
+        state.admin.faq.view.response.error = null;
+        state.admin.faq.add.response.toastMsg = "";
+      })
+      .addCase(retriveFAQ.fulfilled, (state, action: PayloadAction<any>) => {
+        state.admin.faq.view.response.isLoading = false;
+        state.admin.faq.edit.response.isSuccess = true;
+        state.admin.faq.view.response.details = action.payload; // Save the user data in the state
+      })
+      .addCase(retriveFAQ.rejected, (state, action) => {
+        state.admin.faq.view.response.isLoading = false;
+        state.admin.faq.edit.response.isSuccess = false;
+        state.admin.faq.edit.response.toastMsg = "Appointment update failed.";
+
+        state.admin.resources.staff.view.response.error =
+          action.payload as string;
+      })
+      // Ticket
+      .addCase(createTicket.pending, (state) => {
+        state.admin.ticket.add.response.isLoading = true;
+        state.admin.ticket.add.response.isSuccess = false;
+        state.admin.ticket.add.response.toastMsg = "";
+      })
+      .addCase(createTicket.fulfilled, (state, action) => {
+        state.admin.ticket.add.response.isLoading = false;
+        state.admin.ticket.add.response.isSuccess = true;
+        state.admin.ticket.add.response.details = action.payload;
+        state.admin.ticket.add.response.toastMsg = "User created successfully!";
+      })
+      .addCase(createTicket.rejected, (state, action) => {
+        state.admin.ticket.add.response.isLoading = false;
+        state.admin.ticket.add.response.isSuccess = false;
+        state.admin.ticket.add.response.toastMsg = "User creation failed.";
+        state.admin.ticket.add.response.error = action.payload as string;
+      })
+      .addCase(retriveTicket.pending, (state) => {
+        state.admin.ticket.view.response.isLoading = true;
+        state.admin.ticket.view.response.error = null;
+      })
+      .addCase(retriveTicket.fulfilled, (state, action: PayloadAction<any>) => {
+        state.admin.ticket.view.response.isLoading = false;
+        state.admin.ticket.view.response.details = action.payload;
+      })
+      .addCase(retriveTicket.rejected, (state, action) => {
+        state.admin.ticket.view.response.isLoading = false;
+        state.admin.ticket.view.response.error = action.payload as string;
+      })
+      .addCase(updateTicket.pending, (state) => {
+        state.admin.ticket.edit.response.isLoading = true;
+        state.admin.ticket.edit.response.error = null;
+        state.admin.ticket.add.response.toastMsg = "";
+      })
+      .addCase(updateTicket.fulfilled, (state, action) => {
+        state.admin.ticket.edit.response.isLoading = false;
+        state.admin.ticket.edit.response.isSuccess = true;
+        state.admin.ticket.edit.response.details = action.payload;
+        state.admin.ticket.add.response.toastMsg = "User updated successfully!";
+        state.admin.ticket.edit.response.error = null;
+      })
+      .addCase(updateTicket.rejected, (state, action) => {
+        state.admin.ticket.edit.response.isLoading = false;
+        state.admin.ticket.edit.response.isSuccess = false;
+        state.admin.ticket.edit.response.toastMsg = "User update failed.";
+        state.admin.ticket.edit.response.error = action.payload as string;
       });
   },
 });
@@ -719,5 +836,7 @@ export const {
   setEditStaffResourceTrue,
   setEditAdminResourceTrue,
   setEditStaffId,
+  setEditTicketTrue,
+  setEditTicketId,
 } = adminSlice.actions;
 export default adminSlice.reducer;

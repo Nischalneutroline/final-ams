@@ -15,6 +15,7 @@ import { capitalizeFirstChar } from "@/utils/utils";
 import { ServiceDataTableRowActions } from "./datatable-row-actions/servicedatatable-row-actions";
 import { Ticket } from "@/features/ticket/types/types";
 import { StaffDataTableRowActions } from "./datatable-row-actions/staffdatatable-row-actions";
+import { TicketDataTableRowActions } from "./datatable-row-actions/ticketdatatable-row-actions";
 const getRoleBadgeStyle = (role: string) => {
   switch (role) {
     case "admin":
@@ -587,10 +588,10 @@ export const TicketsColumns: ColumnDef<Ticket>[] = [
   },
   {
     accessorKey: "subject",
-    header: "Issue",
+    header: "Subject",
   },
   {
-    accessorKey: "description",
+    accessorKey: "ticketDescription",
     header: "Description",
   },
   {
@@ -616,7 +617,7 @@ export const TicketsColumns: ColumnDef<Ticket>[] = [
 
       return (
         <span
-          className={` py-1.5 min-w-[120px] text-center inline-block rounded-full text-white text-sm font-medium `}
+          className={` py-1.5 min-w-[120px] text-center inline-block rounded-full text-black text-sm font-medium `}
         >
           {`${priority}`}
         </span>
@@ -630,15 +631,15 @@ export const TicketsColumns: ColumnDef<Ticket>[] = [
     ),
   },
   {
-    accessorKey: "assignedTo",
+    accessorKey: "userType",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned To" />
+      <DataTableColumnHeader column={column} title="Ticket Type" />
     ),
   },
 
   {
     id: "actions",
-    cell: ({ row }) => <CustomerDataTableRowActions row={row} />,
+    cell: ({ row }) => <TicketDataTableRowActions row={row} />,
   },
 ];
 
@@ -681,32 +682,6 @@ export const StaffColumns: ColumnDef<Ticket>[] = [
       <DataTableColumnHeader column={column} title="Phone" />
     ),
   },
-  // {
-  //   accessorKey: "dateOfBirth",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Date of Birth" />
-  //   ),
-  //   cell: ({ row }) => format(new Date(row.original.dateOfBirth), "PPP"),
-  // },
-  {
-    accessorKey: "role",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Role" />
-    ),
-    cell: ({ row }) => {
-      const role: string = row.getValue("role");
-
-      return (
-        <span
-          className={` py-1 w-[80px] sm:min-w-[135px] text-center inline-block rounded-full text-white text-[12px] sm:text-sm font-medium ${getRoleBadgeStyle(
-            role.toLocaleLowerCase()
-          )}`}
-        >
-          {capitalizeFirstChar(role.toLocaleLowerCase())}
-        </span>
-      );
-    },
-  },
   {
     accessorKey: "address",
     header: ({ column }) => (
@@ -714,9 +689,9 @@ export const StaffColumns: ColumnDef<Ticket>[] = [
     ),
   },
   {
-    accessorKey: "businessId",
+    accessorKey: "role",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Business" />
+      <DataTableColumnHeader column={column} title="Role" />
     ),
   },
 

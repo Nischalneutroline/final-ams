@@ -12,65 +12,76 @@ import TagIcon from "@mui/icons-material/Tag";
 import QuizIcon from "@mui/icons-material/Quiz";
 import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
 import DeleteSweepOutlinedIcon from "@mui/icons-material/DeleteSweepOutlined";
-import React from "react";
-import { useAppDispatch } from "@/state/store";
+import React, { useEffect, useState } from "react";
+import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
 import {
   setAddFAQFormTrue,
   setEditFAQFormTrue,
   setEditFAQId,
 } from "@/state/admin/AdminSlice";
+import { deleteFAQ, retriveFAQ } from "@/state/admin/AdminServices";
 
-export const dummyFAQs: FAQ[] = [
-  {
-    id: "1",
-    question: "How can I reset my password?",
-    answer:
-      "You can reset your password by clicking on the 'Forgot Password' link on the login page and following the instructions.",
-    category: "General",
-    isActive: true,
-    order: 1,
-    lastUpdatedById: "user123",
-    createdById: "admin1",
-  },
-  {
-    id: "2",
-    question: "How do I contact customer support?",
-    answer:
-      "You can reach our customer support team by emailing support@ourcompany.com or calling (123) 456-7890.",
-    category: "Support",
-    isActive: true,
-    order: 2,
-    lastUpdatedById: "user124",
-    createdById: "admin2",
-  },
-  {
-    id: "3",
-    question: "What payment methods are accepted?",
-    answer: "We accept credit/debit cards, PayPal, and bank transfers.",
-    category: "Billing",
-    isActive: true,
-    order: 3,
-    lastUpdatedById: "user125",
-    createdById: "admin3",
-  },
-  {
-    id: "4",
-    question: "Where can I view my order history?",
-    answer:
-      "You can view your order history by logging into your account and navigating to the 'Orders' section.",
-    category: "General",
-    isActive: false, // Inactive FAQ
-    order: 4,
-    lastUpdatedById: "user126",
-    createdById: "admin4",
-  },
-];
+// export const dummyFAQs: FAQ[] = [
+//   {
+//     id: "1",
+//     question: "How can I reset my password?",
+//     answer:
+//       "You can reset your password by clicking on the 'Forgot Password' link on the login page and following the instructions.",
+//     category: "General",
+//     isActive: true,
+//     order: 1,
+//     lastUpdatedById: "user123",
+//     createdById: "admin1",
+//   },
+//   {
+//     id: "2",
+//     question: "How do I contact customer support?",
+//     answer:
+//       "You can reach our customer support team by emailing support@ourcompany.com or calling (123) 456-7890.",
+//     category: "Support",
+//     isActive: true,
+//     order: 2,
+//     lastUpdatedById: "user124",
+//     createdById: "admin2",
+//   },
+//   {
+//     id: "3",
+//     question: "What payment methods are accepted?",
+//     answer: "We accept credit/debit cards, PayPal, and bank transfers.",
+//     category: "Billing",
+//     isActive: true,
+//     order: 3,
+//     lastUpdatedById: "user125",
+//     createdById: "admin3",
+//   },
+//   {
+//     id: "4",
+//     question: "Where can I view my order history?",
+//     answer:
+//       "You can view your order history by logging into your account and navigating to the 'Orders' section.",
+//     category: "General",
+//     isActive: false, // Inactive FAQ
+//     order: 4,
+//     lastUpdatedById: "user126",
+//     createdById: "admin4",
+//   },
+// ];
 
 const FAQPage = () => {
   const dispatch = useAppDispatch();
+  const [order, setOrder] = useState(1);
+  const { details: dummyFAQs } = useAppSelector(
+    (state: RootState) => state.admin.admin.faq.view.response
+  );
   const openAddFAQForm = () => {
     dispatch(setAddFAQFormTrue(true));
   };
+
+  console.log(dummyFAQs, "Dummy Faq");
+
+  useEffect(() => {
+    dispatch(retriveFAQ());
+  }, [dispatch]);
 
   return (
     <div className={`${formOuterDivCss}  gap-8 lg:w-[880px]`}>
@@ -108,8 +119,9 @@ const FAQPage = () => {
                 <div
                   className="flex gap-2 items-center cursor-pointer"
                   onClick={() => {
-                    dispatch(setEditFAQId(index));
+                    dispatch(setEditFAQId(faqs.id));
                     dispatch(setEditFAQFormTrue(true));
+                    setOrder(index);
                   }}
                 >
                   <div className="text-[13px] sm:text-[16px] font-[500]">
@@ -123,7 +135,8 @@ const FAQPage = () => {
                 <div
                   className="flex gap-2 items-center cursor-pointer"
                   onClick={() => {
-                    dispatch(setEditFAQId(index));
+                    dispatch(deleteFAQ(faqs));
+                    setOrder(index);
                   }}
                 >
                   <div className="text-[13px] sm:text-[16px] font-[500]">

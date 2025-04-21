@@ -17,6 +17,7 @@ import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
 import {
   setAddFAQFormTrue,
   setEditFAQFormTrue,
+  setEditFAQId,
 } from "@/state/admin/AdminSlice";
 import { useEffect, useRef } from "react";
 import {
@@ -28,19 +29,41 @@ import {
   formTitleCss,
   formTitleDivCss,
 } from "@/features/shared-features/form/props";
+import SelectInput from "@/features/shared-features/form/selectinput";
+import SwitchInput from "@/features/shared-features/form/switchinput";
+import { updateFAQ } from "@/state/admin/AdminServices";
 
 const EditFAQ = () => {
   // On submit funciton
   const onSubmit = (data: any) => {
-    console.log("Transformed data:", data);
+    const updatedData = {
+      question: data.question ?? dataToEdit.question,
+      answer: data.answer ?? dataToEdit.answer,
+      category: data.category ?? dataToEdit.category,
+      isActive: data.isActive ?? dataToEdit.isActive,
+    };
+    const transformedData = { ...dataToEdit, ...updatedData };
     reset();
-    dispatch(setAddFAQFormTrue(false));
+    console.log(transformedData);
+    dispatch(updateFAQ(transformedData));
+    dispatch(setEditFAQId(null));
+
+    dispatch(setEditFAQFormTrue(false));
   };
 
   const dispatch = useAppDispatch();
   const { isFlag } = useAppSelector(
     (state: RootState) => state.admin.admin.faq.edit
   );
+  const { id } = useAppSelector(
+    (state: RootState) => state.admin.platform.faq._edit_FAQForm
+  );
+
+  const { details } = useAppSelector(
+    (state: RootState) => state.admin.admin.faq.view.response
+  );
+
+  const dataToEdit = details?.find((u: any) => u.id === id);
 
   // React-hook-form with Zod validation
   const {
@@ -71,6 +94,12 @@ const EditFAQ = () => {
 
   const remaining = { actions: commonActions, form, css: {} };
 
+  const options = [
+    { label: "General", value: "GENERAL" },
+    { label: "Support", value: "SUPPORT" },
+    { label: "Issues", value: "ISSUES" },
+  ];
+
   const formObj = {
     question: {
       common: fullNameProps({
@@ -78,6 +107,7 @@ const EditFAQ = () => {
         label: "Questions",
         placeholder: "Enter FAQ Question.",
         showImportant: true,
+        defaultValue: dataToEdit?.question,
         type: "text",
       }),
       ...remaining,
@@ -88,7 +118,33 @@ const EditFAQ = () => {
         label: "Answer",
         placeholder: "Enter FAQ Answer.",
         showImportant: true,
+        defaultValue: dataToEdit?.answer,
+
         type: "textbox",
+      }),
+      ...remaining,
+    },
+    category: {
+      common: fullNameProps({
+        input: "category",
+        label: "Category",
+        placeholder: "Please Select a Category.",
+        defaultValue: dataToEdit?.category,
+
+        showImportant: true,
+      }),
+      multiple: false,
+
+      options,
+      ...remaining,
+    },
+    isActive: {
+      common: fullNameProps({
+        input: "isActive",
+        label: "Active ?",
+        defaultValue: dataToEdit?.isActive,
+
+        placeholder: "",
       }),
       ...remaining,
     },
@@ -127,7 +183,7 @@ const EditFAQ = () => {
             animate={{ y: 0, scale: [0.9, 1.02, 1] }}
             exit={{ y: 50, scale: 0.9 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`${formSmallContainerCss} lg:h-[40%]`}
+            className={`${formSmallContainerCss} lg:h-[55%] `}
           >
             <div className={formTitleDivCss}>
               <div className={formTitleCss}>Edit FAQ</div>
@@ -138,12 +194,15 @@ const EditFAQ = () => {
             </div>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className={`${formOuterDivCss} overflow-y-hidden gap-4`}
+              className={`${formOuterDivCss} overflow-y-auto gap-4`}
             >
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-4">
                 <TextInput {...formObj.question} />
                 <TextInput {...formObj.answer} />
+                <SelectInput {...formObj.category} />
+                <SwitchInput {...formObj.isActive} />
               </div>
+
               <div className=" flex flex-col mb-4  justify-center gap-4">
                 <Button {...addUserBtnProps} />
               </div>

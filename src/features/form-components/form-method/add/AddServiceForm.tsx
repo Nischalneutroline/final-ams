@@ -167,20 +167,6 @@ const AddServiceForm = () => {
       ...remaining,
     },
 
-    // address: {
-    //   street: {
-    //     common: streetProps({}),
-    //     ...remaining,
-    //   },
-    //   city: {
-    //     common: cityProps({}),
-    //     ...remaining,
-    //   },
-    //   country: {
-    //     common: countryProps({}),
-    //     ...remaining,
-    //   },
-    // },
     estimatedDuration: {
       common: roleProps({
         input: "estimatedDuration",
@@ -219,7 +205,6 @@ const AddServiceForm = () => {
       }),
       options,
       ...remaining,
-      css: { divCss: "min-h-[150px] gap-y-4" },
     },
     avalabilities: {
       common: emptyFormProps({

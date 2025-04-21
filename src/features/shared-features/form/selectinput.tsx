@@ -1,40 +1,59 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+import { useState, useEffect } from "react";
 import { SelectInputSchema } from "@/schemas/schema";
 import { getFormErrorMsg } from "@/utils/utils";
 import { FormSpanError } from "./error/fromspanerror";
 import { formInputCss, formErrorCss, formDivCss, formLabelCss } from "./props";
 
-export default function SelectInput(props: SelectInputSchema) {
-  // Props
-  const { common, actions, form, css, options } = props;
-  // Props variables
+export default function CustomSelectInput(props: SelectInputSchema) {
+  const { common, actions, form, css, options, multiple } = props;
   const { input, label, defaultValue, placeholder, showImportant, icon } =
     common;
-  const { register, errors } = form;
-  const { handleClick, handleKeyUp, handleKeyDown, handleOnChange } = actions!;
-  const { divCss, labelCss, inputCss, errorCss } = css!;
+  const { register, setValue, errors } = form;
+  const { handleClick, handleKeyUp, handleKeyDown } = actions || {};
+  const { divCss, labelCss, errorCss } = css || {};
 
-  // Values
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<string[]>(() =>
+    Array.isArray(defaultValue)
+      ? defaultValue
+      : defaultValue
+      ? [defaultValue]
+      : []
+  );
+
   const errorMsg = getFormErrorMsg(errors, input);
-
-  // Css
   const finalDivCss = divCss ?? formDivCss;
   const finalLabelCss = labelCss ?? formLabelCss;
-  const finalInputCss = inputCss ?? formInputCss;
-  // Css
-  const highlightBorder =
-    "border focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500";
-  const errorBorder =
-    "border border-red-400 focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400";
-  const border = errorMsg ? errorBorder : highlightBorder;
+  const border = errorMsg
+    ? "border border-red-400 focus:outline-none focus:ring-red-400"
+    : "border focus:outline-none focus:ring-sky-500";
 
-  // Error Props
-  // const labelErrorProps = { css: {}, title: "*" };
   const errorProps = {
     css: { customCss: errorCss ?? formErrorCss },
     title: errorMsg,
   };
+
+  const toggleSelect = (value: string) => {
+    let updated: string[] = [];
+
+    if (multiple) {
+      updated = selected.includes(value)
+        ? selected.filter((v) => v !== value)
+        : [...selected, value];
+    } else {
+      updated = [value];
+      setOpen(false);
+    }
+
+    setSelected(updated);
+    setValue(input, multiple ? updated : updated[0]);
+  };
+  const getLabelFromValue = (value: string) =>
+    options?.find((opt) => opt.value === value)?.label || value;
+  useEffect(() => {
+    // Initialize form field value
+    setValue(input, multiple ? selected : selected[0] || "");
+  }, []);
 
   return (
     <div className={`${finalDivCss}`}>
@@ -44,38 +63,47 @@ export default function SelectInput(props: SelectInputSchema) {
           {showImportant && <span className="text-red-400">*</span>}
         </label>
       )}
-      <select
-        id={`${input}`}
-        {...register(input)}
-        className={
-          `${finalInputCss} ${border}` + "[&>*]:p-8  placholder::text-gray-400"
-        }
-        type="text"
-        placeholder={placeholder}
-        key={`${input}-select`}
-        defaultValue={defaultValue || ""}
-        onClick={handleClick}
-        onChange={handleOnChange}
-        onKeyUp={handleKeyUp}
+
+      <div
+        onClick={() => setOpen((prev) => !prev)}
+        className={`w-full bg-white px-4 py-2 rounded-md cursor-pointer ${border}`}
         onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyUp}
+        onClickCapture={handleClick}
       >
-        <option
-          key={"placeholder"}
-          value=""
-          disabled
-          hidden
-          style={{ color: "#4B5563" }}
-        >
-          {placeholder || "Select an option"}
-        </option>
-        {options?.map((item: any, idx: number) => {
-          return (
-            <option key={`${idx}. ${item.value}`} value={item.value}>
-              {item.label}
-            </option>
-          );
-        })}
-      </select>
+        {selected.length === 0
+          ? placeholder || "Select an option"
+          : multiple
+          ? selected.map((v) => getLabelFromValue(v)).join(", ")
+          : getLabelFromValue(selected[0])}
+      </div>
+      {open && (
+        <div className="border top-20 bg-white rounded-md shadow-lg z-50 max-h-60 overflow-y-auto absolute w-full">
+          {options?.map((opt: any, idx) => {
+            const isChecked = selected.includes(opt.value);
+            return (
+              <div
+                key={idx}
+                className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                onClick={() => toggleSelect(opt.value)}
+              >
+                {multiple && (
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={isChecked}
+                    readOnly
+                  />
+                )}
+                <span>{opt.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Register hidden input for react-hook-form */}
+      <input type="hidden" {...register(input)} />
 
       <div className="-translate-y-17">
         {errorMsg && <FormSpanError {...errorProps} />}

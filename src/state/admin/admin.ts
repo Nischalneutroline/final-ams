@@ -87,6 +87,22 @@ export interface AdminResourceFormSchema {
   address: string;
   service: { id: string }[];
 }
+
+export interface AdminTicketFormSchema {
+  userType: string;
+  subject: string;
+  ticketDescription: string;
+  category: string;
+  priority: string;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+  assignedTo?: string | null;
+  resolutionDescription?: string;
+  proofFiles?: string[] | null;
+  initiatedById?: string | null;
+  userId?: string;
+}
 // Define The Platform Schema for Each of the Form Driven Section of Admin
 export interface CustomerPlatformSchema {
   id?: string | number | null;
@@ -120,6 +136,11 @@ export interface ResourcePlatformSchema {
   id?: string | number | null;
   input: AdminResourceFormSchema;
   details: AdminResourceFormSchema[];
+}
+export interface TicketPlatformSchema {
+  id?: string | number | null;
+  input: AdminTicketFormSchema;
+  details: AdminTicketFormSchema[];
 }
 
 // Create the Platform Schema for Each of the form associated with CRUD
@@ -155,6 +176,11 @@ export interface ResourcePlatform {
   _edit_ResourceForm: ResourcePlatformSchema;
   _view_ResourceForm: ResourcePlatformSchema;
 }
+export interface TicketPlatform {
+  _add_TicketForm: TicketPlatformSchema;
+  _edit_TicketForm: TicketPlatformSchema;
+  _view_TicketForm: TicketPlatformSchema;
+}
 
 export type AdminApi = {
   user: ServiceType;
@@ -183,6 +209,7 @@ export interface AdminSliceSchema {
     notification: ServicePlatform;
     faq: FAQPlatform;
     resource: ResourcePlatform;
+    ticket: TicketPlatform;
   };
   admin: AdminApi;
 }

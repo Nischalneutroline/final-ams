@@ -1,8 +1,5 @@
 import TicketPageHeader from "@/features/customer/components/ticketpageheader";
-import {
-  AppointmentColumns,
-  TicketsColumns,
-} from "@/features/shared-features/table/columns";
+import { TicketsColumns } from "@/features/shared-features/table/columns";
 import { TicketsDataTable } from "@/features/shared-features/table/data-table/ticketsdata-table";
 import React from "react";
 

@@ -77,15 +77,16 @@ export function DayAndTimeSelection(props: any) {
         };
 
         const updateDaySlots = (day: string, slots: TimeSlot[]) => {
-          const safeValue: ServiceAvailability[] = Array.isArray(value)
-            ? value
-            : [];
+          const safeValue: any = Array.isArray(value) ? value : [];
 
-          const updated = safeValue.some((d) => d.weekDay === day)
-            ? safeValue.map((d) =>
+          const updated = safeValue.some((d: any) => d.weekDay === day)
+            ? safeValue.map((d: any) =>
                 d.weekDay === day ? { ...d, timeSlots: slots } : d
               )
             : [...safeValue, { weekDay: day, timeSlots: slots }];
+
+          // Important: update RHF field value
+          onChange(updated);
         };
 
         const addTimeSlot = () => {

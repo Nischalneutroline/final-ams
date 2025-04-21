@@ -86,4 +86,5 @@ export type FormPropsValueType = {
   icon?: ReactNode;
   disabledValue?: any;
   format?: string;
+  multiple?: boolean;
 };

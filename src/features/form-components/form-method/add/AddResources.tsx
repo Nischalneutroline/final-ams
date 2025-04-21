@@ -30,13 +30,38 @@ import {
   formTitleCss,
   formTitleDivCss,
 } from "@/features/shared-features/form/props";
-import { retriveService } from "@/state/admin/AdminServices";
+import { createStaff, retriveService } from "@/state/admin/AdminServices";
 import SelectInput from "@/features/shared-features/form/selectinput";
+import { Service } from "@/features/service/types/types";
 
 const AddStaffResources = () => {
   // On submit funciton
   const onSubmit = (data: any) => {
+    const formattedServices = details?.filter((detail: Service) => {
+      const services = data.services;
+
+      if (Array.isArray(services)) {
+        if (typeof services[0] === "string") {
+          // array of IDs
+          return services.includes(detail.id);
+        } else if (typeof services[0] === "object" && services[0].id) {
+          // array of objects with id
+          return services.some((service: any) => service.id === detail.id);
+        }
+      }
+
+      return false;
+    });
+    const transformedData = {
+      ...data,
+      services: formattedServices,
+    };
+
     reset();
+    console.log(transformedData, "transformed data");
+    dispatch(createStaff(transformedData));
+    // console.log(formattedServices, "formattedServices");
+
     dispatch(setAddStaffResourceTrue(false));
   };
 
@@ -132,6 +157,7 @@ const AddStaffResources = () => {
         showImportant: true,
       }),
       options: serviceOptions,
+      multiple: true,
       ...remaining,
     },
   };

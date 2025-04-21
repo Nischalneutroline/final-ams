@@ -25,11 +25,21 @@ import {
   formTitleCss,
   formTitleDivCss,
 } from "@/features/shared-features/form/props";
+import { createFAQ, updateStaff } from "@/state/admin/AdminServices";
+import SwitchInput from "@/features/shared-features/form/switchinput";
+import SelectInput from "@/features/shared-features/form/selectinput";
 
 const AddFAQ = () => {
   // On submit funciton
   const onSubmit = (data: any) => {
-    console.log("Transformed data:", data);
+    const transformedData = {
+      ...data,
+      createdById: "cm9gu8ms60000vdg0zdnsxb6z",
+      order: details?.length + 1,
+      lastUpdatedById: "cm9gu8ms60000vdg0zdnsxb6z",
+    };
+    console.log(transformedData, "transformedData");
+    dispatch(createFAQ(transformedData));
     reset();
     dispatch(setAddFAQFormTrue(false));
   };
@@ -37,6 +47,9 @@ const AddFAQ = () => {
   const dispatch = useAppDispatch();
   const { isFlag } = useAppSelector(
     (state: RootState) => state.admin.admin.faq.add
+  );
+  const { details } = useAppSelector(
+    (state: RootState) => state.admin.admin.faq.view.response
   );
 
   // React-hook-form with Zod validation
@@ -68,6 +81,13 @@ const AddFAQ = () => {
 
   const remaining = { actions: commonActions, form, css: {} };
 
+  const options = [
+    { label: "General", value: "GENERAL" },
+    { label: "Support", value: "SUPPORT" },
+
+    { label: "Issues", value: "ISSUES" },
+  ];
+
   const formObj = {
     question: {
       common: fullNameProps({
@@ -86,6 +106,27 @@ const AddFAQ = () => {
         placeholder: "Enter FAQ Answer.",
         showImportant: true,
         type: "textbox",
+      }),
+      ...remaining,
+    },
+    category: {
+      common: fullNameProps({
+        input: "category",
+        label: "Category",
+        placeholder: "Please Select a Category.",
+        showImportant: true,
+        type: "text",
+      }),
+      options,
+      multiple: false,
+
+      ...remaining,
+    },
+    isActive: {
+      common: fullNameProps({
+        input: "isActive",
+        label: "Active ?",
+        placeholder: "",
       }),
       ...remaining,
     },
@@ -124,7 +165,7 @@ const AddFAQ = () => {
             animate={{ y: 0, scale: [0.9, 1.02, 1] }}
             exit={{ y: 50, scale: 0.9 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className={`${formSmallContainerCss} lg:h-[40%]`}
+            className={`${formSmallContainerCss} lg:h-[55%] `}
           >
             <div className={formTitleDivCss}>
               <div className={formTitleCss}>Add New FAQ</div>
@@ -135,10 +176,15 @@ const AddFAQ = () => {
             </div>
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className={`${formOuterDivCss} overflow-y-hidden `}
+              className={`${formOuterDivCss} overflow-y-auto gap-4`}
             >
-              <TextInput {...formObj.question} />
-              <TextInput {...formObj.answer} />
+              <div className="flex flex-col gap-4">
+                <TextInput {...formObj.question} />
+                <TextInput {...formObj.answer} />
+                <SelectInput {...formObj.category} />
+                <SwitchInput {...formObj.isActive} />
+              </div>
+
               <div className=" flex flex-col mb-4  justify-center gap-4">
                 <Button {...addUserBtnProps} />
               </div>

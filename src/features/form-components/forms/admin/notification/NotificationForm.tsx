@@ -29,7 +29,6 @@ import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
 import { CheckboxInput } from "@/features/shared-features/form/checkboxinput";
 import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
 import { retriveService } from "@/state/admin/AdminServices";
-import { Service } from "../../../../../data/structure";
 
 const ReminderForm = (props: any) => {
   const { serviceOptions } = props;
@@ -236,6 +235,8 @@ const ReminderForm = (props: any) => {
         ),
       }),
       options: serviceOptions,
+      multiple: false,
+
       ...remaining,
     },
 
@@ -342,6 +343,8 @@ const ReminderForm = (props: any) => {
         showImportant: true,
       }),
       options: notificationOptions,
+      multiple: false,
+
       ...remaining,
     },
     host: {
@@ -352,6 +355,8 @@ const ReminderForm = (props: any) => {
         showImportant: true,
       }),
       options: notificationOptions,
+      multiple: false,
+
       ...remaining,
     },
     expireAt: {
