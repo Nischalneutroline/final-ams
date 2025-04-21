@@ -20,7 +20,7 @@ export interface AppointmentReminderOffset {
   id: string
   appointmentId: string
   reminderOffsetId: string
-  scheduledAt: string // ISO string
+/*   scheduledAt: string  */// ISO string
   sent: boolean
 }
 

@@ -5,5 +5,5 @@ import { sendAnnouncement } from "@/tasks/inngest/offerFunction"
 
 export const { GET, POST, PUT } = serve({
   client: inngestClient,
-  functions: [appointmentReminder,/* sendAnnouncement */],
+  functions: [appointmentReminder,sendAnnouncement],
 })
