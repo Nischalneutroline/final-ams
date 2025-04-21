@@ -12,7 +12,8 @@ export const appointmentReminder = inngestClient.createFunction(
     name: "Send Appointment Reminders", // Human-readable name
   },
   {
-    cron: "*/15 * * * *", // Run every 15 minutes
+    cron: "* * * * *",
+   
   },
   async ({ step }) => {
     // Step 1: Fetch relevant appointments
@@ -109,9 +110,11 @@ async function processReminder(
  
     // Calculate time difference from now in minutes
     const diffFromNow = (reminderTime.getTime() - now.getTime()) / 1000 / 60
+    console.log('diff from now', diffFromNow);
 
    
     if (diffFromNow >= 0 && diffFromNow <= 15) {
+      console.log('hi');
       let shouldSend = false // Flag to determine if email should be sent
       let message = "" // Email message content
 
@@ -189,6 +192,7 @@ async function processReminder(
       // Send email and update sent status if applicable
       if (shouldSend) {
         try {
+          console.log('mail to be sent',email);
           // Send the reminder email
           await sendReminderEmail(email, name, message, reminder.type)
           // Mark this appointment-specific offset as sent

@@ -404,3 +404,67 @@ model Resource {
   createdAt DateTime @default(now()) // Creation timestamp
   updatedAt DateTime @updatedAt // Last update
 }
+
+enum VideoProvider {
+  ZOOM
+  GOOGLE_MEET
+}
+
+model Meeting {
+  id             String   @id @default(cuid())
+  eventTypeId    String
+  timeSlot       DateTime
+  bookedByName   String
+  bookedByEmail  String
+  customAnswers  Json?
+
+  videoUrl       String?
+  videoProvider  VideoProvider?
+  slug           String? @unique
+
+  event           Event @relation(fields: [eventId], references: [id])
+  
+}
+
+model Availability {
+  id          String   @id @default(cuid())
+  eventTypeId String
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+
+  event       Event @relation(fields: [eventId], references: [id])
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  duration      Int
+  location      String?       // e.g. Zoom, Google Meet
+  slug          String   @unique
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  createdById   String?
+  createdBy     User?    @relation("CreatedEvent", fields: [createdById], references: [id])
+  createdAt     DateTime @default(now())
+
+  availability  Availability[]
+  meetings      Meeting[]
+}
+
+model Individual {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  bio            String?
+  position       String     // e.g. "Product Designer", "Marketing Coach"
+  profileImage   String?
+  country        String 
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user           User     @relation(fields: [userId], references: [id])
+  events        Event[] @relation("IndividualEvent")
+}
