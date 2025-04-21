@@ -54,7 +54,7 @@ const AddStaffResources = () => {
     });
     const transformedData = {
       ...data,
-      services: formattedServices,
+      services: formattedServices,  
     };
 
     reset();

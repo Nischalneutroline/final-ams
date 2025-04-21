@@ -21,8 +21,14 @@ import { CheckboxWithSchedule } from "@/features/shared-features/form/checkboxwi
 import { XIcon } from "lucide-react";
 import { Message } from "@mui/icons-material";
 import { formSubmitDivCss } from "@/features/shared-features/form/props";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc"; // UTC plugin
+import timezone from "dayjs/plugin/timezone";
+import { createAnnouncement } from "@/state/admin/AdminServices";
 
 const AnnouncementForm = () => {
+  dayjs.extend(utc);
+
   const [reminderType, setReminderType] = useState("REMINDER");
 
   // Redux Variable
@@ -33,79 +39,44 @@ const AnnouncementForm = () => {
     return notification.map((method) => ({ method }));
   };
 
-  const extractDateTime = (dateStr: string, timeStr: string): string | null => {
-    try {
-      const date = new Date(dateStr);
-      const time = new Date(timeStr);
+  function extractDateTime(dateStr: string, timeStr: string): string {
+    // Force both to parse in LOCAL time to prevent shifting
+    const date = dayjs(dateStr).format("YYYY-MM-DD"); // Extract pure date
+    const time = dayjs(timeStr).format("HH:mm:ss"); // Extract just time
 
-      // Add one day to the date
-      const merged = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate() + 1, // ✅ Add one day
-        time.getHours(),
-        time.getMinutes(),
-        time.getSeconds()
-      );
+    // Combine them as "YYYY-MM-DDTHH:mm:ss"
+    const combined = dayjs(`${date}T${time}`).local(); // Convert to local time
 
-      return merged.toISOString(); // 👉 "2025-05-23T09:30:00.000Z"
-    } catch (err) {
-      console.error("Error parsing date/time:", err);
-      return null;
-    }
-  };
+    return combined.format("YYYY-MM-DDTHH:mm:ss"); // Output proper local ISO
+  }
   // Submit handler
   const onSubmit = (data: any) => {
+    const now = new Date(); // ✅ Capture current date & time once
+    const localISOTime = now.toLocaleString("sv-SE").replace(" ", "T");
+
     const showOn = data.showOn[0].method;
     const title = data.title;
     const description = data.description;
     const message = data.message;
     const audience = data.targetAudience;
     const expiredAt = data.expiryReminder[0].method;
-    const isImmediate =
-      data.announcement[0].method === "Immediately" ? true : false;
+    const isImmediate = data.announcement[0].method === "Immediately";
+    console.log(data.scheduledTime, "time");
+
     let scheduledAt: string | null = null;
 
     if (isImmediate) {
-      scheduledAt = new Date().toISOString(); // ✅ use current time
-    } else {
+      scheduledAt = localISOTime; // ✅ Consistent current time
+    } else if (data.scheduledTime?.date && data.scheduledTime?.time) {
       scheduledAt = extractDateTime(
         data.scheduledTime.date,
         data.scheduledTime.time
-      ); // ✅ use extracted +1 day
+      );
+    } else {
+      console.error("Scheduled time is missing");
+      // You could return early or show an error
     }
-    // const scheduledTime = data.scheduledTime || {};
 
-    // const hasDate = scheduledTime?.date;
-    // const hasTime = scheduledTime?.time;
-
-    // const isValidDate = (val: any) =>
-    //   typeof val === "string" && val.trim().length > 0;
-    // const isValidTime = (val: any) =>
-    //   typeof val === "string" && val.trim().length > 0;
-
-    // const isImmediate = !(isValidDate(hasDate) && isValidTime(hasTime));
-
-    // let scheduledAt: string | null = null;
-    // if (!isImmediate) {
-    //   const isoString = new Date(`${hasDate}T${hasTime}`);
-    //   if (!isNaN(isoString.getTime())) {
-    //     scheduledAt = isoString.toISOString();
-    //   } else {
-    //     console.error("Invalid date/time:", hasDate, hasTime);
-    //   }
-    // }
-
-    // const transformedData = {
-    //   title: data.title,
-    //   description: data.description || "",
-    //   message: data.message || "",
-    //   audience: data.targetAudience || "ALL",
-    //   isImmediate,
-    //   scheduledAt,
-    //   showOn: data.showOn?.[0]?.method || "BANNER", // this must match Prisma enum type
-    //   expiredAt: data.expiryReminder?.[0]?.method || "THIRTY_DAYS", // also must match Prisma enum
-    // };
     const transformedData = {
       title,
       description,
@@ -115,17 +86,11 @@ const AnnouncementForm = () => {
       scheduledAt,
       showOn,
       expiredAt,
-      type: reminderType, // assuming reminderType is available in the scope
     };
+
     console.log(data);
     console.log(transformedData, "transformedData");
-
-    // Optional: send to API
-    // await fetch("/api/announcements", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(transformedData),
-    // });
+    createAnnouncement(transformedData);
   };
 
   // React-hook-form with Zod validation

@@ -32,6 +32,7 @@ import { retriveStaff, retriveUsers } from "@/state/admin/AdminServices";
 import { useEffect } from "react";
 import { TicketsDataTableToolbar } from "../data-table-toolbar/ticketsdata-table-toolbar";
 import { StaffDataTableToolbar } from "../data-table-toolbar/staffdata-table-toolbar";
+import { Resource } from "@/features/resource/types/types";
 
 interface DataTableProps<TValue> {
   columns: ColumnDef<TValue>[];
@@ -56,7 +57,7 @@ export function StaffDataTable<TValue>({ columns }: DataTableProps<TValue>) {
   const { details } = useAppSelector(
     (state: RootState) => state.admin.admin.resources.staff.view.response
   );
-  const data = details;
+  const data = details?.filter((data: Resource) => data.role === "STAFF");
   console.log(data, "data in staff");
 
   const table = useReactTable({

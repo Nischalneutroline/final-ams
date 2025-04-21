@@ -97,7 +97,7 @@ const ServiceForm = (props: any) => {
 
         <DayAndTimeSelection {...formObj.serviceHourDay} />
 
-        <div className="flex flex-col sm:flex-row justify-between">
+        <div className="flex flex-col sm:flex-row justify-between items-center w-full">
           <SwitchInput {...formObj.avalabilities} />
           <SelectInput {...formObj.estimatedDuration} />
         </div>

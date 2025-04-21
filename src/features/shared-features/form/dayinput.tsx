@@ -328,8 +328,10 @@ export function TimeInput(props: InputSchema) {
               className="datePicker"
               value={field.value ? dayjs(field.value) : null}
               onChange={(newValue) => {
-                const isoString = newValue ? newValue.toISOString() : "";
-                field.onChange(isoString);
+                const localTime = newValue
+                  ? newValue.format("YYYY-MM-DDTHH:mm:ss")
+                  : "";
+                field.onChange(localTime);
               }}
               slotProps={{
                 textField: {

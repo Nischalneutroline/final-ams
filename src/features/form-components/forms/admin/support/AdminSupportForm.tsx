@@ -82,16 +82,15 @@ const AdminSupportForm = () => {
 
   const remaining = { actions: commonActions, form, css: {} };
 
-  const notificationOptions = [
-    { label: "Techinical Issue", value: "TECHNICAL" },
-    {
-      label: "Business Information Update Request ",
-      value: "GENERAL",
-    },
-    { label: "Notification/Reminder Issue", value: "notification-issue" },
-    { label: "Payment and Billing Issue", value: "payment-issue" },
-    { label: "Announcemnt/Offer Issue", value: "announcemnet-issue" },
-    { label: "General Inquiry", value: "general-inquiry" },
+  const ticketCategoryOptions = [
+    { label: "Technical", value: "TECHNICAL" },
+    { label: "Billing", value: "BILLING" },
+    { label: "Account", value: "ACCOUNT" },
+    { label: "General", value: "GENERAL" },
+    { label: "Support", value: "SUPPORT" },
+    { label: "Security", value: "SECURITY" },
+    { label: "Maintenance", value: "MAINTENANCE" },
+    { label: "Feedback", value: "FEEDBACK" },
   ];
   const priorityLevelOptions = [
     { label: "Low", value: "LOW" },
@@ -121,7 +120,7 @@ const AdminSupportForm = () => {
         showImportant: true,
         type: "select",
       }),
-      options: notificationOptions,
+      options: ticketCategoryOptions,
       multiple: false,
       ...remaining,
     },

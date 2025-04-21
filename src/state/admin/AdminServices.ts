@@ -6,6 +6,7 @@ import {
 } from "./admin";
 import axios from "axios";
 import { BusinessDetail } from "@/data/structure";
+import { Service } from "@/features/service/types/types";
 // Post User data
 export const createUser = createAsyncThunk(
   "admin/user/add",
@@ -97,6 +98,7 @@ export const createAppointment = createAsyncThunk(
       isForSelf: false,
       bookedById: "cm9gu8ms60000vdg0zdnsxb6z",
       createdById: "cm9gu8ms60000vdg0zdnsxb6z",
+      status: "SCHEDULED",
     };
     console.log("Transformed Data:", transformed);
     try {
@@ -293,10 +295,15 @@ export const retriveStaff = createAsyncThunk(
 
 export const updateStaff = createAsyncThunk(
   "admin/staff/edit", // action type
-  async (formData, { rejectWithValue }) => {
+  async (formData: AdminResourceFormSchema, { rejectWithValue }) => {
+    const transformedData = {
+      ...formData,
+      businessId: "cm9gvwy4s0003vdg0f24wf178",
+    };
+    console.log(transformedData);
     try {
       // Assuming the API endpoint for viewing a user is /api/users/{id}
-      const response = await axios.put(`/api/resource`, formData);
+      const response = await axios.put(`/api/resource`, transformedData);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || err.message);
@@ -306,7 +313,7 @@ export const updateStaff = createAsyncThunk(
 
 export const deleteStaff = createAsyncThunk(
   "admin/staff/delete",
-  async (payload) => {
+  async (payload: AdminResourceFormSchema) => {
     console.log("Deleting appointment with payload:", payload);
     const response = await axios.delete(`/api/resource`, {
       data: payload, // 👈 this is required to pass body in DELETE request
@@ -478,6 +485,58 @@ export const deleteTicket = createAsyncThunk(
     console.log(formData, "inside ticket");
     try {
       const res = await axios.delete("/api/ticket", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+
+export const retriveAnnouncement = createAsyncThunk(
+  "admin/announcement/view",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get("/api/announcement-offer");
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const createAnnouncement = createAsyncThunk(
+  "admin/announcement/add",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.post("/api/announcement-offer", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const updateAnnouncement = createAsyncThunk(
+  "admin/announcement/update",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.put("/api/announcement-offer", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+export const deleteAnnouncement = createAsyncThunk(
+  "admin/announcement/delete",
+  async (formData: any, { rejectWithValue }) => {
+    console.log(formData, "inside ticket");
+    try {
+      const res = await axios.delete("/api/announcement-offer", formData);
       return res.data;
     } catch (err: any) {
       console.log(err);
