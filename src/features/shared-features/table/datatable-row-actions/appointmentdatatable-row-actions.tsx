@@ -3,7 +3,7 @@
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
-import { Button } from "./components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,16 +11,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
+} from "../components/ui/dropdown-menu";
+import { useAppDispatch } from "@/state/store";
+import {
+  setEditAppointmentFormTrue,
+  setEditAppointmentId,
+  setEditCustomerFormTrue,
+  setEditCustomerId,
+} from "@/state/admin/AdminSlice";
+import {
+  deleteAppointment,
+  retriveAppointment,
+} from "@/state/admin/AdminServices";
 
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
+interface AppointmentDataTableRowActionsProps<TData> {
+  row: Row<TData> | any;
 }
 
-export function DataTableRowActions<TData>({
+export function AppointmentDataTableRowActions<TData>({
   row,
-}: DataTableRowActionsProps<TData>) {
+}: AppointmentDataTableRowActionsProps<TData>) {
   // const task = taskSchema.parse(row.original);
+
+  const dispatch = useAppDispatch();
 
   return (
     <DropdownMenu>
@@ -34,11 +47,23 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            dispatch(setEditAppointmentId(row.original.id));
+            dispatch(setEditAppointmentFormTrue(true));
+          }}
+        >
+          Edit
+        </DropdownMenuItem>
         <DropdownMenuItem>Make a copy</DropdownMenuItem>
         <DropdownMenuItem>Favorite</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            dispatch(deleteAppointment(row.original));
+            dispatch(retriveAppointment());
+          }}
+        >
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>

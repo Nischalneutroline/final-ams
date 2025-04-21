@@ -8,19 +8,22 @@ import {
   columns,
 } from "../../../features/shared-features/table/columns";
 import { CustomerDataTable } from "@/features/shared-features/table/data-table/customerdata-table";
-import { RootState, useAppSelector } from "@/state/store";
+import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
 import CustomerCardView from "@/features/shared-features/cards/CustomerCardView";
+import { retriveUsers } from "@/state/admin/AdminServices";
 
 const page = () => {
   const { view } = useAppSelector(
     (state: RootState) => state.admin.admin.user?.viewType
   );
+
+  // console.log("Data from Api:", details);
   return (
     <div className="w-full flex flex-col gap-4 ">
       <CustomerPageHeader />
 
       {view ? (
-        <CustomerDataTable data={usersData} columns={UserColumns} />
+        <CustomerDataTable  columns={UserColumns} />
       ) : (
         <CustomerCardView user={usersData} />
       )}

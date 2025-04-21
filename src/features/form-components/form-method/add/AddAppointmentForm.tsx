@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  AdminAppointmentFormValues,
   AdminUserFormValues,
   adminAppointmentSchema,
   adminUserSchema,
@@ -10,34 +11,69 @@ import { motion, AnimatePresence } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   commonActions,
+  createdByIdProps,
+  customerNameProps,
   dateProps,
   emailProps,
   fullNameProps,
+  isForSelfProps,
   messageProps,
   phoneProps,
-  serviceProps,
+  selectedDateProps,
+  selectedTimeProps,
+  serviceIdProps,
+  statusProps,
   timeProps,
 } from "@/features/shared-features/form/formporps";
 import CenterSection from "@/features/shared-features/section/centersection";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import { useForm } from "react-hook-form";
-import { RootState, useAppSelector } from "@/state/store";
-import { useDispatch } from "react-redux";
+import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
+
 import { setAddAppointmentFormTrue } from "@/state/admin/AdminSlice";
 import CloseIcon from "@mui/icons-material/Close";
 import AppointmentForm from "../../forms/admin/AppointmentForm";
+import {
+  createAppointment,
+  retriveAppointment,
+  retriveUsers,
+} from "@/state/admin/AdminServices";
+import { AdminAppointmentFormSchema } from "@/state/admin/admin";
+import {
+  formContainerCss,
+  formSubTitleCss,
+  formTitleCss,
+  formTitleDivCss,
+} from "@/features/shared-features/form/props";
 
 const AddAppointmentForm = () => {
   // Redux Variable
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const { details: userDetails } = useAppSelector(
+    (state: RootState) => state.admin.admin.user.view.response
+  );
+  const { details: serviceDetails } = useAppSelector(
+    (state: RootState) => state.admin.admin.service.view.response
+  );
+
   const { isFlag } = useAppSelector(
     (state: RootState) => state.admin.admin.appointment.add
   );
 
   // Submit handler
-  const onSubmit = (data: AdminUserFormValues) => {
+  const onSubmit = (data: AdminAppointmentFormSchema) => {
+    console.log(errors, "Error");
     console.log("Form Submitted:", data);
+    const updatedData = {
+      ...data,
+      status: "SCHEDULED",
+      userId: data.createdById,
+    };
+    console.log(updatedData, "transformedData");
+    dispatch(createAppointment(data));
     reset();
+    dispatch(setAddAppointmentFormTrue(false));
+    dispatch(retriveAppointment());
   };
 
   //  Ref for closing modal on outside click
@@ -79,32 +115,90 @@ const AddAppointmentForm = () => {
     { label: "Staff", value: "staff" },
   ];
 
+  function getLabelValueArray(
+    details: { id: string | number; name: string }[]
+  ) {
+    return details.map((user) => ({
+      label: user.name,
+      value: String(user.id),
+    }));
+  }
+
+  function getServiceOptions(
+    services: { id: string; title: string; status: string }[]
+  ) {
+    return services
+      .filter((service) => service.status === "ACTIVE")
+      .map((service) => ({
+        label: service.title,
+        value: service.id,
+      }));
+  }
+
+  const createdByOptions = getLabelValueArray(userDetails);
+  const serviceOptions = getServiceOptions(serviceDetails);
+
+  enum AppointmentStatus {
+    SCHEDULED = "SCHEDULED",
+    COMPLETED = "COMPLETED",
+    MISSED = "MISSED",
+    CANCELLED = "CANCELLED",
+    FOLLOW_UP = "FOLLOW_UP",
+  }
+  const status = [
+    { label: "Scheduled", value: "SCHEDULED" },
+    { label: "Completed", value: "COMPLETED" },
+    { label: "Missed", value: "MISSED" },
+    { label: "Cancelled", value: "CANCELLED" },
+    { label: "Follow Up", value: "FOLLOW_UP" },
+  ];
+
   const formObj: any = {
-    full_name: {
-      common: fullNameProps({}),
+    firstName: {
+      common: customerNameProps({
+        input: "firstName",
+        label: "First Name",
+        type: "text",
+        placeholder: "Enter Customer First Name",
+        showImportant: true,
+      }),
+      ...remaining,
+    },
+    lastName: {
+      common: customerNameProps({
+        input: "lastName",
+        label: "Last Name",
+        type: "text",
+        placeholder: "Enter Customer Last Name",
+        showImportant: true,
+        icon: <></>,
+      }),
       ...remaining,
     },
     email: {
       common: emailProps({}),
       ...remaining,
     },
-    phone_number: {
+    phone: {
       common: phoneProps({}),
       ...remaining,
     },
-    service: {
-      common: serviceProps({}),
-      options,
+
+    serviceId: {
+      common: serviceIdProps({}),
+      options: serviceOptions,
       ...remaining,
     },
-    date: {
-      common: dateProps({}),
+    selectedDate: {
+      common: selectedDateProps({}),
       ...remaining,
     },
-    time: { common: timeProps({}), ...remaining },
+    selectedTime: { common: selectedTimeProps({}), ...remaining },
+
     message: { common: messageProps({}), ...remaining },
   };
   useEffect(() => {
+    dispatch(retriveUsers());
     const handleClickOutside = (event: MouseEvent) => {
       const popup = document.querySelector(
         '.MuiPickersPopper-root, [role="dialog"]'
@@ -139,27 +233,13 @@ const AddAppointmentForm = () => {
             animate={{ y: 0, scale: [0.9, 1.02, 1] }}
             exit={{ y: 50, scale: 0.9 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="h-[90%] sm:h-[80%] lg:h-auto lg:pb-8 w-[90%] sm:w-[75%] lg:w-[50%] bg-white rounded-2xl shadow-xl flex flex-col overflow-y-auto"
+            className={formContainerCss}
           >
-            <div className="relative h-[120px] lg:h-[140px] bg-gradient-to-b from-blue-300 to-white flex flex-col text-black justify-items-center  py-2 gap-2 px-4">
-              <div className="flex md:flex-col items-center justify-center gap-2 md:gap-0 pt-3">
-                <PersonAddAltIcon
-                  sx={{
-                    fontSize: {
-                      xs: "20px",
-                      sm: "22px",
-                      lg: "24px",
-                      xl: "28px",
-                    },
-                  }}
-                />
-                <div className="text-[16px] sm:text-[18px] md:text-[20px] 2xl:text-[32px] font-normal lg:font-semibold ">
-                  Add New Appointment
-                </div>
-              </div>
-              <div className="flex justify-center text-center text-[11px] sm:text-[13px] lg:text-[14px] text-[#455A64]">
-                You’re creating an account on behalf of a user. Please ensure
-                accuracy. ⚠️
+            <div className={formTitleDivCss}>
+              <div className={formTitleCss}>Appointment Details</div>
+              <div className={formSubTitleCss}>
+                Fill out the form below to schedult an appointment on for
+                customer. Review all details before submitting.
               </div>
               <div
                 className="absolute top-3 right-4 text-red-600 cursor-pointer"
@@ -168,6 +248,7 @@ const AddAppointmentForm = () => {
                 <CloseIcon />
               </div>
             </div>
+
             <AppointmentForm formObj={formObj} form={form} />
           </motion.div>
         </CenterSection>

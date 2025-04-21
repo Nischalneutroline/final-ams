@@ -20,6 +20,7 @@ export type FormSchema = {
   form: {
     register: any;
     errors: any;
+
     setValue?: any;
     reset?: any;
     control?: any;
@@ -31,10 +32,10 @@ export type FormSchema = {
 
 export type FormActionsSchema = {
   actions?: {
-    handleClick: any;
-    handleKeyUp: any;
-    handleKeyDown: any;
-    handleOnChange: any;
+    handleClick?: any;
+    handleKeyUp?: any;
+    handleKeyDown?: any;
+    handleOnChange?: any;
   };
 };
 
@@ -51,6 +52,10 @@ export type CommonInputSchema = {
     restCommon?: any;
     handleOnChange?: any;
     ref?: any;
+    leftLabel?: string;
+    rightLabel?: string;
+    disabledValues?: any;
+    format?: string;
   };
 };
 
@@ -65,7 +70,12 @@ export interface InputSchema
     inputPropsSchema,
     ErrorMsgSchema,
     FormSchema,
-    FormActionsSchema,
+    CommonInputSchema {}
+export interface SwitchInputSchema
+  extends CssSchema,
+    inputRefSchema,
+    inputPropsSchema,
+    ErrorMsgSchema,
     CommonInputSchema {}
 
 export type CssSchema = {
@@ -117,6 +127,7 @@ export interface InputSchema
 
 export interface SelectInputSchema extends InputSchema {
   options: OptionSchema[];
+  multiple: boolean;
 }
 
 export interface AuthFormContainerSchema

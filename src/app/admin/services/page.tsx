@@ -1,14 +1,12 @@
 "use client";
 
-import { usersData } from "@/features/shared-features/table/data";
+import { servicesData } from "@/features/shared-features/table/data";
 import React from "react";
-import {
-  UserColumns,
-  columns,
-} from "../../../features/shared-features/table/columns";
-import { CustomerDataTable } from "@/features/shared-features/table/data-table/customerdata-table";
+import { ServiceColumns } from "../../../features/shared-features/table/columns";
 import { RootState, useAppSelector } from "@/state/store";
-import CustomerCardView from "@/features/shared-features/cards/CustomerCardView";
+import ServicePageHeader from "@/features/service/components/servicepageheader";
+import { ServiceCardView } from "@/features/shared-features/cards/ServiceCardView";
+import { ServiceDataTable } from "../../../features/shared-features/table/data-table/servicedata-table";
 
 const page = () => {
   const { view } = useAppSelector(
@@ -16,12 +14,12 @@ const page = () => {
   );
   return (
     <div className="w-full flex flex-col gap-4 ">
-      {/* <CustomerPageHeader /> */}
+      <ServicePageHeader />
 
       {view ? (
-        <CustomerDataTable data={usersData} columns={UserColumns} />
+        <ServiceDataTable columns={ServiceColumns} />
       ) : (
-        <CustomerCardView user={usersData} />
+        <ServiceCardView data={servicesData} />
       )}
     </div>
   );

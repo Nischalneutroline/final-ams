@@ -3,8 +3,10 @@ export function capitalizeFirstChar(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
-export const getFormErrorMsg = (errors: any, inputName: string) =>
-  errors && errors[inputName] && errors[inputName]?.message.toString()
+export const getFormErrorMsg = (errors: any, inputName: string) => {
+  const message = errors?.[inputName]?.message;
+  return message ? message.toString() : "";
+};
 
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"

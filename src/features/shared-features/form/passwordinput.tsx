@@ -20,8 +20,15 @@ export default function PasswordInput(props: InputSchema) {
   const { common, actions, form, css } = props;
 
   // Props variables
-  const { input, label, defaultValue, placeholder, showForgotPassword } =
-    common;
+  const {
+    input,
+    label,
+    defaultValue,
+    placeholder,
+    icon,
+    showForgotPassword,
+    showImportant,
+  } = common;
   const { register, errors } = form;
   const { handleClick, handleKeyUp, handleKeyDown, handleOnChange } = actions!;
   const { divCss, labelCss, inputCss, errorCss, iconCss } = css!;
@@ -56,7 +63,8 @@ export default function PasswordInput(props: InputSchema) {
     <div className={finalDivCss}>
       {label && (
         <label className={finalLabelCss} htmlFor={input}>
-          {label}
+          {icon && icon} {label}
+          {showImportant && <span className="text-red-400">*</span>}
           {showForgotPassword && (
             <Link href="/forgot-password">
               <span className="text-new-blue-700">Forgot Password?</span>
@@ -65,11 +73,11 @@ export default function PasswordInput(props: InputSchema) {
         </label>
       )}
 
-      <div className="relative w-full">
+      <div className="relative">
         <input
           id={input}
           {...register(input)}
-          className={`${finalInputCss} ${border} pr-10`} // Added padding-right to make room for the icon
+          className={`${finalInputCss} ${border} w-full pr-10`} // Added padding-right to make room for the icon
           type={show ? "text" : "password"}
           placeholder={placeholder}
           key={input}

@@ -1,55 +1,53 @@
 "use client";
 import Button from "@/features/shared-features/common/button";
-
-import { addUserBtnProps } from "@/features/shared-features/form/formporps";
-
+import {
+  addAppointmentBtnProps,
+  addUserBtnProps,
+} from "@/features/shared-features/form/formporps";
 import TextInput from "@/features/shared-features/form/inputtext";
-import PasswordInput from "@/features/shared-features/form/passwordinput";
-import InputPhone from "@/features/shared-features/form/phoneinput";
 import SelectInput from "@/features/shared-features/form/selectinput";
 import SwitchInput from "@/features/shared-features/form/switchinput";
 import React from "react";
 import { cancelBtnProps } from "../../../shared-features/form/formporps";
-import {
-  setAddAppointmentFormTrue,
-  setAddCustomerFormTrue,
-} from "@/state/admin/AdminSlice";
-import { useDispatch } from "react-redux";
+import { setAddAppointmentFormTrue } from "@/state/admin/AdminSlice";
 import { DateInput, TimeInput } from "@/features/shared-features/form/dayinput";
+import { useAppDispatch } from "@/state/store";
+import ControllerSelectInput from "@/features/shared-features/form/selectContollerInput";
+import {
+  formOuterDivCss,
+  formSubmitDivCss,
+} from "@/features/shared-features/form/props";
 
 const AppointmentForm = (props: any) => {
   const { formObj, form } = props;
 
   const { handleSubmit, onSubmit } = form;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleCancleButton = () => {
     dispatch(setAddAppointmentFormTrue(false));
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="relative flex flex-col gap-2 sm:gap-4 px-4"
-    >
-      <TextInput {...formObj.full_name} />
-
-      <TextInput {...formObj.email} />
-
-      <TextInput {...formObj.phone_number} />
-
-      <SelectInput {...formObj.service} />
-      <div className="flex justify-between items-center">
-        <DateInput {...formObj.date} />
-        <TimeInput {...formObj.time} />
+    <form onSubmit={handleSubmit(onSubmit)} className={formOuterDivCss}>
+      <div className="flex flex-col sm:gap-2 ">
+        <div className="flex flex-row">
+          <TextInput {...formObj.firstName} />
+          <TextInput {...formObj.lastName} />
+        </div>
+        <TextInput {...formObj.email} />
+        <TextInput {...formObj.phone} />
+        <SelectInput {...formObj.serviceId} />
+        <div className="flex flex-row justify-between items-center">
+          <DateInput {...formObj.selectedDate} />
+          <TimeInput {...formObj.selectedTime} />
+        </div>
+        <TextInput {...formObj.message} />
       </div>
-      <TextInput {...formObj.message} />
-
-      <div className=" flex mb-4 w-full justify-center bottom-4 gap-4">
+      <div className={formSubmitDivCss}>
         <Button {...cancelBtnProps(handleCancleButton)} />
-
-        <Button {...addUserBtnProps} />
+        <Button {...addAppointmentBtnProps()} />
       </div>
     </form>
   );

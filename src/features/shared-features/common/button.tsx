@@ -21,8 +21,8 @@ export default function Button(props: ButtonSchema) {
           <Spinner isFlag />
         </button>
       ) : (
-        <button {...buttonProps}>
-          <div className={iconCss}>{icon}</div>
+        <button {...buttonProps} type="submit">
+          {icon && <div className={iconCss}>{icon}</div>}
           {title}
         </button>
       )}
