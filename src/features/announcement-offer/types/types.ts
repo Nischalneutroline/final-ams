@@ -3,8 +3,8 @@ export enum Showon {
   BANNER = "BANNER",
   PUSH = "PUSH",
   EMAIL = "EMAIL",
+  SMS = "SMS",
   ALL = "ALL",
-  // SMS = "SMS",
 }
 
 // Enum for TargetAudience

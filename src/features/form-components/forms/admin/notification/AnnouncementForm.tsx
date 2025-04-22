@@ -139,12 +139,12 @@ const AnnouncementForm = () => {
     },
     {
       label: "Email",
-      value: "Email",
+      value: "EMAIL",
       showSchedule: false,
     },
     {
       label: "SMS",
-      value: "SMA",
+      value: "SMS",
       showSchedule: false,
     },
     {
