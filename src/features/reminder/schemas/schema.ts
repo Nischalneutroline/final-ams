@@ -18,9 +18,9 @@ const AppointmentReminderOffsetSchema = z.object({
 const ReminderOffsetSchema = z.object({
   id: z.string().optional(),
   sendOffset: z.number().int().min(1, "Send offset must be greater than 0"),
-  scheduledAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
+/*   scheduledAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Scheduled date must be a valid ISO string",
-  }),
+  }), */
   sendBefore: z.boolean(),
   appointmentOffsets: z.array(AppointmentReminderOffsetSchema).optional()
 })

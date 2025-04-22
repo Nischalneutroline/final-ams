@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         reminderOffset: {
           create: parsedData.reminderOffset.map((reminderOffset) => ({
             sendOffset: reminderOffset.sendOffset,
-            scheduledAt: new Date(reminderOffset.scheduledAt),
+           /*  scheduledAt: new Date(reminderOffset.scheduledAt), */
             sendBefore: reminderOffset.sendBefore,
           })),
         },
@@ -130,12 +130,12 @@ export async function PUT(req: NextRequest) {
             where: { id: reminderOffset.id }, // If ID exists, update, otherwise create
             update: {
               sendOffset: reminderOffset.sendOffset,
-              scheduledAt: new Date(reminderOffset.scheduledAt),
+              /* scheduledAt: new Date(reminderOffset.scheduledAt), */
               sendBefore: reminderOffset.sendBefore,
             },
             create: {
               sendOffset: reminderOffset.sendOffset,
-              scheduledAt: new Date(reminderOffset.scheduledAt),
+              /* scheduledAt: new Date(reminderOffset.scheduledAt), */
               sendBefore: reminderOffset.sendBefore,
             },
           })),
