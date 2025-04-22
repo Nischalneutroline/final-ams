@@ -33,33 +33,28 @@ export async function POST(req: NextRequest) {
       },
     });
 
-
     if (!newService) {
       return NextResponse.json(
         { error: "Failed to create service" },
         { status: 500 }
       );
-   
     }
 
     return NextResponse.json(
       { message: "New Service created successfully", service: newService },
       { status: 201 }
     );
-
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: "Validation failed", details: error },
         { status: 400 }
       );
-    
     }
     return NextResponse.json(
       { error: "Internal server error", message: error },
       { status: 500 }
     );
-
   }
 }
 
@@ -75,18 +70,23 @@ export async function GET() {
             timeSlots: true,
           },
         },
-        // businessAvailability: {
-        //   include: {
-        //     timeSlots: true,
-        //   },
-        // },
+        BusinessDetail: {
+          include: {
+            businessAvailability: {
+              include: {
+                timeSlots: true,
+              },
+            },
+            holiday: true,
+          },
+        },
       },
     });
 
     if (services.length === 0) {
       return NextResponse.json({ error: "No services found" }, { status: 404 });
     }
-   
+
     return NextResponse.json(services, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -102,7 +102,7 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
 
     const { id } = body;
-  
+
     if (!id) {
       return NextResponse.json(
         { error: "Service Id required!" },
@@ -181,7 +181,6 @@ export async function DELETE(req: NextRequest) {
       where: { id },
     });
 
-
     if (!deletedService) {
       return NextResponse.json(
         { error: "Service could not be deleted" },
@@ -192,12 +191,10 @@ export async function DELETE(req: NextRequest) {
       { message: "Service deleted successfully" },
       { status: 200 }
     );
-
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to delete service", message: error },
       { status: 500 }
     );
-   
   }
 }

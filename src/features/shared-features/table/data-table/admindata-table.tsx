@@ -45,17 +45,13 @@ export function AdminDataTable<TValue>({ columns }: DataTableProps<TValue>) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const { isSuccess } = useAppSelector(
-    (state: RootState) => state.admin.admin.user.add.response
-  );
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const dispatch = useAppDispatch();
 
   const { details } = useAppSelector(
     (state: RootState) => state.admin.admin.resources.staff.view.response
   );
   const data = details?.filter((data: Resource) => data.role === "ADMIN");
-  console.log(data, "data in admin");
 
   const table = useReactTable({
     data,
