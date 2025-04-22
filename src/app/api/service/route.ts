@@ -75,8 +75,19 @@ export async function GET() {
             timeSlots: true,
           },
         },
+        BusinessDetail: {
+          include: {
+            businessAvailability: {
+              include: {
+                timeSlots: true,
+              },
+            },
+            holiday: true,
+          },
+        },
       },
     });
+    
 
     if (services.length === 0) {
       return NextResponse.json({ error: "No services found" }, { status: 404 });
