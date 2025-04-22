@@ -4,7 +4,7 @@ export enum Showon {
   PUSH = "PUSH",
   EMAIL = "EMAIL",
   ALL = "ALL",
-  SMS = "SMS",
+  // SMS = "SMS",
 }
 
 // Enum for TargetAudience

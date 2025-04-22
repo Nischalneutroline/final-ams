@@ -158,18 +158,27 @@ const EditServiceForm = () => {
   const availabilityDefaultValue =
     dataToEdit?.status === "ACTIVE" ? true : false;
 
-  const transformAvailability = (apiData: any[]): ServiceAvailability[] => {
-    return apiData?.map((entry) => ({
+  const transformAvailability = (apiData: any) => {
+    const formatTime = (dateStr: string) => {
+      const date = new Date(dateStr);
+      return isNaN(date.getTime()) ? "" : date.toISOString().substring(11, 16);
+    };
+
+    return apiData?.map((entry: any) => ({
       weekDay: entry.weekDay,
-      timeSlots: entry.timeSlots.map(
-        (slot: { id: string; startTime: string; endTime: string }) => ({
-          id: slot.id,
-          startTime: new Date(slot.startTime).toISOString().substring(11, 16), // format to HH:mm
-          endTime: new Date(slot.endTime).toISOString().substring(11, 16), // format to HH:mm
-        })
-      ),
+      timeSlots: (entry.timeSlots ?? []).map((slot: any) => ({
+        id: entry.id,
+        startTime: formatTime(slot.startTime),
+        endTime: formatTime(slot.endTime),
+      })),
     }));
   };
+  const serviceAvailaibiltyDefaultValue = transformAvailability(
+    dataToEdit?.ServiceAvailability
+  );
+  console.log(dataToEdit, "data to Edit");
+
+  console.log(serviceAvailaibiltyDefaultValue, "Availability");
 
   const remaining = { actions: commonActions, form, css: {} };
 
@@ -254,7 +263,7 @@ const EditServiceForm = () => {
         input: "serviceHourDay",
         label: "Service Hour / Day",
         showImportant: true,
-        defaultValue: transformAvailability(dataToEdit?.serviceAvailability),
+        defaultValue: serviceAvailaibiltyDefaultValue,
       }),
       options,
       ...remaining,

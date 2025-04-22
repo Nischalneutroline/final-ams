@@ -30,7 +30,11 @@ import { TableContainer, Paper } from "@mui/material";
 import { DataTablePagination } from "../data-table-pagination";
 import { CustomerDataTableToolbar } from "../data-table-toolbar/customerdata-table-toolbar";
 import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
-import { retriveUsers } from "@/state/admin/AdminServices";
+import {
+  retriveAnnouncement,
+  retriveReminder,
+  retriveUsers,
+} from "@/state/admin/AdminServices";
 import { useEffect } from "react";
 import { NotificationDataTableToolbar } from "../data-table-toolbar/notificationdata-table-toolbar";
 
@@ -54,15 +58,18 @@ export function NotificationDataTable<TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(retriveUsers());
-  }, [dispatch, isSuccess]);
+    dispatch(retriveReminder());
+    dispatch(retriveAnnouncement());
+  }, [dispatch, isSuccess, tableType]);
 
-
-
-  const { details } = useAppSelector(
-    (state: RootState) => state.admin.admin.user.view.response
+  const { details: reminder } = useAppSelector(
+    (state: RootState) => state.admin.admin.reminder.view.response
   );
-  const data = details;
+  const { details: announcement } = useAppSelector(
+    (state: RootState) => state.admin.admin.announcement.view.response
+  );
+
+  const data = tableType === "Reminder" ? reminder : announcement;
 
   const table = useReactTable({
     data,
@@ -85,10 +92,10 @@ export function NotificationDataTable<TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-console.log(tableType,"TableType");
+  console.log(tableType, "TableType");
   return (
     <div className="space-y-4 lg:max-w-[calc(100vw-120px)]">
-      <NotificationDataTableToolbar table={table}  setTableType={setTableType}/>
+      <NotificationDataTableToolbar table={table} setTableType={setTableType} />
 
       <div className="overflow-y-auto max-w-screen overflow-x-auto  max-h-[300px] sm:max-h-[calc(100vh-320px)] md:max-h-[calc(100vh-280px)] lg:max-h-[calc(100vh-520px)] rounded-md border scrollbar ">
         <Table className="min-w-full text-[11px] sm:text-[13px] lg:text-[14px]">
@@ -97,7 +104,7 @@ console.log(tableType,"TableType");
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead
-                    className="px-2 py-1 md:py-2  text-center text-[12px] sm:text-[14px] lg:text-[16px] bg-slate-200"
+                    className="px-2 py-1 md:py-2  text-start text-[12px] sm:text-[14px] lg:text-[16px] bg-slate-200"
                     key={header.id}
                     colSpan={header.colSpan}
                   >
@@ -120,7 +127,7 @@ console.log(tableType,"TableType");
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell className="px-2 py-2 text-center" key={cell.id}>
+                    <TableCell className="px-2 py-2 text-start" key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -131,10 +138,7 @@ console.log(tableType,"TableType");
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-start">
                   No results.
                 </TableCell>
               </TableRow>

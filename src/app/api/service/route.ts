@@ -70,11 +70,16 @@ export async function GET() {
     const services = await prisma.service.findMany({
       include: {
         appointments: true,
-       serviceAvailability: {
+        serviceAvailability: {
           include: {
             timeSlots: true,
           },
         },
+        // businessAvailability: {
+        //   include: {
+        //     timeSlots: true,
+        //   },
+        // },
       },
     });
 

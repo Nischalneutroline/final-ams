@@ -52,7 +52,7 @@ const AnnouncementForm = () => {
   // Submit handler
   const onSubmit = (data: any) => {
     const now = new Date(); // ✅ Capture current date & time once
-    const localISOTime = now.toLocaleString("sv-SE").replace(" ", "T");
+    const localISOTime = now.toISOString();
 
     const showOn = data.showOn[0].method;
     const title = data.title;
