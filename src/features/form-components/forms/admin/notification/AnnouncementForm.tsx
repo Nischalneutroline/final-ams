@@ -47,7 +47,7 @@ const AnnouncementForm = () => {
     // Combine them as "YYYY-MM-DDTHH:mm:ss"
     const combined = dayjs(`${date}T${time}`).local(); // Convert to local time
 
-    return combined.format("YYYY-MM-DDTHH:mm:ss"); // Output proper local ISO
+    return combined.toISOString(); // Output proper local ISO
   }
   // Submit handler
   const onSubmit = (data: any) => {
