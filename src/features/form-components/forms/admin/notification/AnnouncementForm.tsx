@@ -52,7 +52,7 @@ const AnnouncementForm = () => {
   // Submit handler
   const onSubmit = (data: any) => {
     const now = new Date(); // ✅ Capture current date & time once
-    const localISOTime = now.toLocaleString("sv-SE").replace(" ", "T");
+    const localISOTime = now.toISOString();
 
     const showOn = data.showOn[0].method;
     const title = data.title;
@@ -90,7 +90,7 @@ const AnnouncementForm = () => {
 
     console.log(data);
     console.log(transformedData, "transformedData");
-    createAnnouncement(transformedData);
+    dispatch(createAnnouncement(transformedData));
   };
 
   // React-hook-form with Zod validation
@@ -134,12 +134,17 @@ const AnnouncementForm = () => {
     { label: "Top Banner", value: "BANNER", showSchedule: false },
     {
       label: "Push Notification",
-      value: "PUSH_NOTIFICATION",
+      value: "PUSH",
       showSchedule: false,
     },
     {
       label: "Email",
       value: "Email",
+      showSchedule: false,
+    },
+    {
+      label: "SMS",
+      value: "SMA",
       showSchedule: false,
     },
     {

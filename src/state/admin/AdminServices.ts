@@ -497,7 +497,7 @@ export const deleteTicket = createAsyncThunk(
   }
 );
 
-
+// Announcement
 export const retriveAnnouncement = createAsyncThunk(
   "admin/announcement/view",
   async (_, { rejectWithValue }) => {
@@ -541,6 +541,58 @@ export const deleteAnnouncement = createAsyncThunk(
     console.log(formData, "inside ticket");
     try {
       const res = await axios.delete("/api/announcement-offer", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+// Reminder
+export const retriveReminder = createAsyncThunk(
+  "admin/reminder/view",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.get("/api/reminder");
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const createReminder = createAsyncThunk(
+  "admin/reminder/add",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.post("/api/reminder", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+export const updateReminder= createAsyncThunk(
+  "admin/reminder/update",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const res = await axios.put("/api/reminder", formData);
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(err.response.data || err.message);
+    }
+  }
+);
+
+export const deleteReminder = createAsyncThunk(
+  "admin/reminder/delete",
+  async (formData: any, { rejectWithValue }) => {
+    console.log(formData, "inside ticket");
+    try {
+      const res = await axios.delete("/api/reminder", formData);
       return res.data;
     } catch (err: any) {
       console.log(err);

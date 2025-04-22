@@ -45,10 +45,10 @@ export function NotificationDataTableToolbar<TData>({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-4">
-        <button className="text-[11px] px-4 py-2 flex gap-1 justify-center items-center  bg-gradient-to-b from-[#2B73FF] to-[#038FFF] text-white  font-[600] text-[14px] rounded-sm cursor-pointer" >
+        <button className="text-[11px] px-4 py-2 flex gap-1 justify-center items-center  bg-gradient-to-b from-[#2B73FF] to-[#038FFF] text-white  font-[600] text-[14px] rounded-sm cursor-pointer" onClick={() => setTableType("Reminder")} >
           Reminder
         </button>
-        <button className="text-[11px] px-4 py-2 flex gap-1 justify-center items-center  bg-gradient-to-b from-[#2B73FF] to-[#038FFF] text-white  font-[600] text-[14px] rounded-sm cursor-pointer">
+        <button className="text-[11px] px-4 py-2 flex gap-1 justify-center items-center  bg-gradient-to-b from-[#2B73FF] to-[#038FFF] text-white  font-[600] text-[14px] rounded-sm cursor-pointer" onClick={() => setTableType("Announcemet")}>
           Appointment
         </button>
       </div>

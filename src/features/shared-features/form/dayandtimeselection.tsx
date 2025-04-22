@@ -46,6 +46,7 @@ export function DayAndTimeSelection(props: any) {
       setValue(input, defaultValue);
     }
   }, [defaultValue, getValues, setValue]);
+  console.log(defaultValue, "deafult Value inside day $& time input");
 
   return (
     <Controller
@@ -62,20 +63,20 @@ export function DayAndTimeSelection(props: any) {
 
         const getDayData = (day: string): ServiceAvailability => {
           if (Array.isArray(value)) {
-            return (
-              value.find((d: ServiceAvailability) => d.weekDay === day) ?? {
-                weekDay: day,
-                timeSlots: [{ id: uuidv4(), startTime: "", endTime: "" }],
-              }
+            const existingDay = value.find(
+              (d: ServiceAvailability) => d.weekDay === day
             );
-          } else {
-            return {
-              weekDay: day,
-              timeSlots: [{ id: uuidv4(), startTime: "", endTime: "" }],
-            };
+            if (existingDay) {
+              return existingDay;
+            }
           }
-        };
 
+          // Only create default if nothing exists
+          return {
+            weekDay: day,
+            timeSlots: [{ id: uuidv4(), startTime: "", endTime: "" }],
+          };
+        };
         const updateDaySlots = (day: string, slots: TimeSlot[]) => {
           const safeValue: any = Array.isArray(value) ? value : [];
 
@@ -124,7 +125,7 @@ export function DayAndTimeSelection(props: any) {
         const selectedDaySlots =
           currentData?.timeSlots?.length > 0
             ? currentData.timeSlots
-            : [{ id: uuidv4(), startTime: "", endTime: "" }];
+            : [{ id: "", startTime: "", endTime: "" }];
 
         return (
           <div className={`${finalDivCss} px-4 pb-2 space-y-2`}>

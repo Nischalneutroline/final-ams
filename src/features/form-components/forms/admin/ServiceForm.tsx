@@ -20,10 +20,8 @@ import {
 } from "@/features/shared-features/form/props";
 
 const ServiceForm = (props: any) => {
-  const { formObj, form } = props;
+  const { formObj, form, availaibility, setAvailability } = props;
   const dispatch = useAppDispatch();
-  const [availaibility, setAvailability] = useState("default");
-
   function getLabelValueArray(
     details: { id: string | number; name: string }[]
   ) {
@@ -93,7 +91,7 @@ const ServiceForm = (props: any) => {
             </div>
           </div>
         </div>
-        {/* <DaysSelection {...formObj.serviceAvailability} /> */}
+        <DaysSelection {...formObj.serviceAvailability} />
 
         <DayAndTimeSelection {...formObj.serviceHourDay} />
 

@@ -199,6 +199,8 @@ export type AdminApi = {
     admin: ServiceType;
   };
   supportBusinessDetails: ServiceType;
+  reminder: ServiceType;
+  announcement: ServiceType;
 };
 
 export interface AdminSliceSchema {

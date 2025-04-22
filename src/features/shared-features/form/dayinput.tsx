@@ -103,8 +103,8 @@ export function DaysSelection(props: SelectInputSchema) {
                   isDisabled
                     ? "bg-red-500/90 border-red-500/90 text-white cursor-not-allowed"
                     : isSelected
-                    ? "bg-blue-500 border-blue-500 text-white"
-                    : "border-gray-400 text-gray-500"
+                      ? "bg-blue-500 border-blue-500 text-white"
+                      : "border-gray-400 text-gray-500"
                 }`}
               >
                 <div className="flex items-center justify-center">
@@ -119,8 +119,8 @@ export function DaysSelection(props: SelectInputSchema) {
                     isDisabled
                       ? "bg-red-500/90 text-white border-red-500/90 cursor-not-allowed"
                       : isSelected
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "border-gray-400 text-black"
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "border-gray-400 text-black"
                   }`}
               >
                 {day.label}
@@ -328,9 +328,7 @@ export function TimeInput(props: InputSchema) {
               className="datePicker"
               value={field.value ? dayjs(field.value) : null}
               onChange={(newValue) => {
-                const localTime = newValue
-                  ? newValue.format("YYYY-MM-DDTHH:mm:ss")
-                  : "";
+                const localTime = newValue ? newValue.toISOString() : "";
                 field.onChange(localTime);
               }}
               slotProps={{
