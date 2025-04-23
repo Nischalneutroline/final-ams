@@ -54,11 +54,11 @@ const AddStaffResources = () => {
     });
     const transformedData = {
       ...data,
-      services: formattedServices,
+      services: formattedServices,  
     };
 
     reset();
-    console.log(transformedData, "transformed data");
+
     dispatch(createStaff(transformedData));
     // console.log(formattedServices, "formattedServices");
 

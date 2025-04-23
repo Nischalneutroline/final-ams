@@ -33,11 +33,34 @@ import {
 } from "@/features/shared-features/form/props";
 import { retriveService, updateStaff } from "@/state/admin/AdminServices";
 import SelectInput from "@/features/shared-features/form/selectinput";
+import { Service } from "@prisma/client";
+import { Resource } from "@/features/resource/types/types";
 
 const EditStaffResources = () => {
   // On submit funciton
   const onSubmit = (data: any) => {
-    dispatch(updateStaff(data));
+    const formattedServices = details?.filter((detail: Service) => {
+      const services = data.services;
+
+      if (Array.isArray(services)) {
+        if (typeof services[0] === "string") {
+          // array of IDs
+          return services.includes(detail.id);
+        } else if (typeof services[0] === "object" && services[0].id) {
+          // array of objects with id
+          return services.some((service: any) => service.id === detail.id);
+        }
+      }
+
+      return false;
+    });
+    const transformedData = {
+      ...data,
+      services: formattedServices,
+    };
+    const updatedData = { ...dataToEdit, ...transformedData };
+    console.log(updatedData, "transformed");
+    dispatch(updateStaff(updatedData));
 
     reset();
     dispatch(setEditStaffResourceTrue(false));
@@ -58,6 +81,12 @@ const EditStaffResources = () => {
     (state: RootState) => state.admin.platform.resource._edit_ResourceForm
   );
   const dataToEdit = resourceDetails?.find((u: any) => u.id === id);
+
+  // Extract service IDs
+  const serviceIds = dataToEdit?.services.map((service: Service) => service.id);
+
+  // Return as string if there's a single service, or as an array if there are multiple
+  const result = serviceIds?.length === 1 ? serviceIds[0] : serviceIds;
 
   function getServiceOptions(
     services: { id: string; title: string; status: string }[]
@@ -153,6 +182,7 @@ const EditStaffResources = () => {
         label: "Linked Services",
         placeholder: "Select all the appropriate services.",
         showImportant: true,
+        defaultValue: result,
       }),
       options: serviceOptions,
       multiple: true,

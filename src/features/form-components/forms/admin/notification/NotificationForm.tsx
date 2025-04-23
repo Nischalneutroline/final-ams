@@ -28,12 +28,14 @@ import MarkUnreadChatAltIcon from "@mui/icons-material/MarkUnreadChatAlt";
 import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
 import { CheckboxInput } from "@/features/shared-features/form/checkboxinput";
 import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
-import { retriveService } from "@/state/admin/AdminServices";
+import { createReminder } from "@/state/admin/AdminServices";
+import { Service } from "@/features/service/types/types";
+import { servicesData } from "../../../../shared-features/table/data";
 
 const ReminderForm = (props: any) => {
   const { serviceOptions } = props;
   const dispatch = useAppDispatch();
-  const [reminderType, setReminderType] = useState("Upcoming");
+  const [reminderType, setReminderType] = useState("REMINDER");
   const [scenario, setScenario] = useState("default");
 
   // Redux Variable
@@ -42,20 +44,37 @@ const ReminderForm = (props: any) => {
     return notification.map((method) => ({ method }));
   };
 
+  const { details } = useAppSelector(
+    (state: RootState) => state.admin.admin.service.view.response
+  );
+
   // Submit handler
   const onSubmit = (data: any) => {
-    // const notification = data.notification; // Make sure this exists
-    // const transformedData = {
-    //   ...data,
-    //   type: reminderType,
-    //   notification: prepareNotification(notification),
-    // };
+    console.log(data);
+    console.log(data.serviceId);
+    const description = data?.description;
+    const type = reminderType;
+    const title = data?.title;
+    const message = data?.message;
+    const reminderOffset = data?.reminderOffset;
+    const notifications = data?.notification.map((method: string) => ({
+      method,
+    }));
+    const services = data?.serviceId.map((serviceId: string) => serviceId);
 
-    console.log("Transformed data:", data);
+    const transformedData = {
+      description,
+      type,
+      title,
+      message,
+      reminderOffset,
+      notifications,
+      services,
+    };
+
+    console.log("Transformed data:", transformedData);
+    dispatch(createReminder(transformedData));
   };
-  // const { detials } = useAppSelector(
-  //   (state: RootState) => state.admin.admin.service.view.response
-  // );
 
   // React-hook-form with Zod validation
   const {
@@ -85,9 +104,9 @@ const ReminderForm = (props: any) => {
   const remaining = { actions: commonActions, form, css: {} };
 
   const notificationOptions = [
-    { label: "Email", value: "Email" },
+    { label: "Email", value: "EMAIL" },
     { label: "SMS", value: "SMS" },
-    { label: "Push Notification", value: "Push Notification" },
+    { label: "Push Notification", value: "PUSH" },
   ];
   const expireAtOptions = [
     { label: "7 days", value: "7 DAYS" },
@@ -168,13 +187,13 @@ const ReminderForm = (props: any) => {
   ];
   const getReminderOptions = (type: string) => {
     switch (type) {
-      case "Upcoming":
+      case "REMINDER":
         return upcomingOptions;
-      case "Follow Up":
+      case "FOLLOW_UP":
         return followUpOptions;
-      case "Cancelled":
+      case "CANCELLATION":
         return cancelledOptions;
-      case "Missed":
+      case "MISSED":
         return missedOptions;
       default:
         return [];
@@ -235,7 +254,7 @@ const ReminderForm = (props: any) => {
         ),
       }),
       options: serviceOptions,
-      multiple: false,
+      multiple: true,
 
       ...remaining,
     },
@@ -422,56 +441,56 @@ const ReminderForm = (props: any) => {
           <div className="flex justify-between bg-slate-200 px-2 w-full rounded-md h-[38px] items-center">
             <button
               className={`flex gap-2 justify-center items-center h-[20px] w-[60px] lg:w-[120px] sm:h-[24px] sm:w-[80px] lg:h-[34px] font-medium   text-[12px] sm:text-[12px] lg:text-[14px] rounded-md cursor-pointer ${
-                reminderType === "Upcoming"
+                reminderType === "REMINDER"
                   ? "bg-white text-black"
                   : "bg-slate-200 text-black"
               }`}
               type="button"
-              onClick={() => setReminderType("Upcoming")}
+              onClick={() => setReminderType("REMINDER")}
             >
               Up-Coming
             </button>
             <button
               className={`flex gap-2 justify-center items-center h-[20px] w-[60px] lg:w-[120px] sm:h-[24px] sm:w-[80px] lg:h-[34px] font-medium   text-[12px] sm:text-[12px] lg:text-[14px] rounded-md cursor-pointer ${
-                reminderType === "Follow Up"
+                reminderType === "FOLLOW_UP"
                   ? "bg-white text-black"
                   : "bg-slate-200 text-black"
               }`}
               type="button"
-              onClick={() => setReminderType("Follow Up")}
+              onClick={() => setReminderType("FOLLOW_UP")}
             >
               Follow-up
             </button>
             <button
               className={`flex gap-2 justify-center items-center h-[20px] w-[60px] lg:w-[120px] sm:h-[24px] sm:w-[80px] lg:h-[34px] font-medium   text-[12px] sm:text-[12px] lg:text-[14px] rounded-md cursor-pointer ${
-                reminderType === "Cancelled"
+                reminderType === "CANCELLATION"
                   ? "bg-white text-black"
                   : "bg-slate-200 text-black"
               }`}
               type="button"
-              onClick={() => setReminderType("Cancelled")}
+              onClick={() => setReminderType("CANCELLATION")}
             >
               Cancellation
             </button>
             <button
               className={`flex gap-2 justify-center items-center h-[20px] w-[60px] lg:w-[120px] sm:h-[24px] sm:w-[80px] lg:h-[34px] font-medium   text-[12px] sm:text-[12px] lg:text-[14px] rounded-md cursor-pointer ${
-                reminderType === "Missed"
+                reminderType === "MISSED"
                   ? "bg-white text-black"
                   : "bg-slate-200 text-black"
               }`}
               type="button"
-              onClick={() => setReminderType("Missed")}
+              onClick={() => setReminderType("MISSED")}
             >
               Missed
             </button>
             <button
               className={`flex gap-2 justify-center items-center h-[20px] w-[60px] lg:w-[120px] sm:h-[24px] sm:w-[80px] lg:h-[34px] font-medium   text-[12px] sm:text-[12px] lg:text-[14px] rounded-md cursor-pointer ${
-                reminderType === "Custom"
+                reminderType === "CUSTOM"
                   ? "bg-white text-black"
                   : "bg-slate-200 text-black"
               }`}
               type="button"
-              onClick={() => setReminderType("Custom")}
+              onClick={() => setReminderType("CUSTOM")}
             >
               Custom
             </button>

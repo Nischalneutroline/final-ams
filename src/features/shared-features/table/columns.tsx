@@ -16,6 +16,7 @@ import { ServiceDataTableRowActions } from "./datatable-row-actions/servicedatat
 import { Ticket } from "@/features/ticket/types/types";
 import { StaffDataTableRowActions } from "./datatable-row-actions/staffdatatable-row-actions";
 import { TicketDataTableRowActions } from "./datatable-row-actions/ticketdatatable-row-actions";
+import { NotificationDataTableRowActions } from "./datatable-row-actions/notificationdatatable-row-action";
 const getRoleBadgeStyle = (role: string) => {
   switch (role) {
     case "admin":
@@ -540,6 +541,17 @@ export const NotificationColumns: ColumnDef<User>[] = [
   {
     accessorKey: "description",
     header: "Description",
+    cell: ({ row }) => {
+      const description = row.getValue("description") as string;
+
+      return (
+        <Tooltip title={description} placement="top" arrow>
+          <div className="max-w-[180px] truncate text-ellipsis overflow-hidden whitespace-nowrap cursor-pointer">
+            {description}
+          </div>
+        </Tooltip>
+      );
+    },
   },
   {
     accessorKey: "estimatedDuration",
@@ -557,7 +569,7 @@ export const NotificationColumns: ColumnDef<User>[] = [
 
   {
     id: "actions",
-    cell: ({ row }) => <CustomerDataTableRowActions row={row} />,
+    cell: ({ row }) => <NotificationDataTableRowActions row={row} />,
   },
 ];
 
@@ -593,6 +605,17 @@ export const TicketsColumns: ColumnDef<Ticket>[] = [
   {
     accessorKey: "ticketDescription",
     header: "Description",
+    cell: ({ row }) => {
+      const description = row.getValue("ticketDescription") as string;
+
+      return (
+        <Tooltip title={description} placement="top" arrow>
+          <div className="max-w-[180px] truncate text-ellipsis overflow-hidden whitespace-nowrap cursor-pointer">
+            {description}
+          </div>
+        </Tooltip>
+      );
+    },
   },
   {
     accessorKey: "category",
@@ -600,13 +623,7 @@ export const TicketsColumns: ColumnDef<Ticket>[] = [
       <DataTableColumnHeader column={column} title="Category" />
     ),
   },
-  // {
-  //   accessorKey: "dateOfBirth",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Date of Birth" />
-  //   ),
-  //   cell: ({ row }) => format(new Date(row.original.dateOfBirth), "PPP"),
-  // },
+
   {
     accessorKey: "priority",
     header: ({ column }) => (

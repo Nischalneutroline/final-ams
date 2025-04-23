@@ -49,13 +49,11 @@ export const ReminderCheckboxes = (props: SelectInputSchema) => {
 
           return {
             sendOffset: 30, // default for schedule
-            scheduledAt: datetime,
             sendBefore: sendBeforeValue,
           };
         }
         return {
           sendOffset: opt.offset,
-          scheduledAt: null,
           sendBefore: sendBeforeValue,
         };
       })
@@ -77,7 +75,7 @@ export const ReminderCheckboxes = (props: SelectInputSchema) => {
       )}
 
       <div className="grid grid-cols-2 gap-2">
-        {options?.map((opt) => (
+        {options?.map((opt: any) => (
           <div
             key={opt.value}
             className="cols-span-1 flex items-center space-x-2 cursor-pointer"

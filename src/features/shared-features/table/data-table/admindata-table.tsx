@@ -25,51 +25,33 @@ import {
   TableRow,
 } from "../components/ui/table";
 
-import { TableContainer, Paper } from "@mui/material";
-
 import { DataTablePagination } from "../data-table-pagination";
 import { CustomerDataTableToolbar } from "../data-table-toolbar/customerdata-table-toolbar";
 import { RootState, useAppDispatch, useAppSelector } from "@/state/store";
-import {
-  retriveAnnouncement,
-  retriveReminder,
-  retriveUsers,
-} from "@/state/admin/AdminServices";
+import { retriveStaff, retriveUsers } from "@/state/admin/AdminServices";
 import { useEffect } from "react";
-import { NotificationDataTableToolbar } from "../data-table-toolbar/notificationdata-table-toolbar";
+import { TicketsDataTableToolbar } from "../data-table-toolbar/ticketsdata-table-toolbar";
+import { StaffDataTableToolbar } from "../data-table-toolbar/staffdata-table-toolbar";
+import { Resource } from "@/features/resource/types/types";
 
 interface DataTableProps<TValue> {
   columns: ColumnDef<TValue>[];
 }
 
-export function NotificationDataTable<TValue>({
-  columns,
-}: DataTableProps<TValue>) {
+export function AdminDataTable<TValue>({ columns }: DataTableProps<TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [tableType, setTableType] = React.useState("Reminder");
-  const { isSuccess } = useAppSelector(
-    (state: RootState) => state.admin.admin.user.add.response
-  );
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    dispatch(retriveReminder());
-    dispatch(retriveAnnouncement());
-  }, [dispatch, isSuccess, tableType]);
 
-  const { details: reminder } = useAppSelector(
-    (state: RootState) => state.admin.admin.reminder.view.response
+  const { details } = useAppSelector(
+    (state: RootState) => state.admin.admin.resources.staff.view.response
   );
-  const { details: announcement } = useAppSelector(
-    (state: RootState) => state.admin.admin.announcement.view.response
-  );
-
-  const data = tableType === "Reminder" ? reminder : announcement;
+  const data = details?.filter((data: Resource) => data.role === "ADMIN");
 
   const table = useReactTable({
     data,
@@ -92,12 +74,12 @@ export function NotificationDataTable<TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-  console.log(tableType, "TableType");
+
   return (
     <div className="space-y-4 lg:max-w-[calc(100vw-120px)]">
-      <NotificationDataTableToolbar table={table} setTableType={setTableType} />
+      <StaffDataTableToolbar table={table} />
 
-      <div className="overflow-y-auto max-w-screen overflow-x-auto  max-h-[300px] sm:max-h-[calc(100vh-320px)] md:max-h-[calc(100vh-280px)] lg:max-h-[calc(100vh-520px)] rounded-md border scrollbar ">
+      <div className="overflow-y-auto max-w-screen overflow-x-auto  max-h-[300px] sm:max-h-[calc(100vh-320px)] md:max-h-[calc(100vh-280px)] lg:max-h-[calc(100vh-601px)] rounded-md border scrollbar ">
         <Table className="min-w-full text-[11px] sm:text-[13px] lg:text-[14px]">
           <TableHeader className=" z-20 ">
             {table.getHeaderGroups().map((headerGroup) => (

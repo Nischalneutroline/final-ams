@@ -8,19 +8,25 @@ import {
   //   APiType,
 } from "./admin";
 import {
+  createAnnouncement,
   createAppointment,
+  createReminder,
   createService,
   createSupportBusinessDetails,
   createTicket,
   createUser,
   retrieveBusiness,
+  retriveAnnouncement,
   retriveAppointment,
   retriveFAQ,
+  retriveReminder,
   retriveService,
   retriveStaff,
   retriveTicket,
   retriveUsers,
+  updateAnnouncement,
   updateAppointment,
+  updateReminder,
   updateTicket,
   updateUser,
 } from "./AdminServices";
@@ -429,6 +435,9 @@ const initialState: AdminSliceSchema = {
       admin: InitialServiceData,
     },
     supportBusinessDetails: InitialServiceData,
+
+    reminder: InitialServiceData,
+    announcement: InitialServiceData,
   },
 };
 
@@ -802,6 +811,114 @@ const adminSlice = createSlice({
         state.admin.ticket.edit.response.isSuccess = false;
         state.admin.ticket.edit.response.toastMsg = "User update failed.";
         state.admin.ticket.edit.response.error = action.payload as string;
+      })
+
+      // Reminder
+      .addCase(createReminder.pending, (state) => {
+        state.admin.reminder.add.response.isLoading = true;
+        state.admin.reminder.add.response.isSuccess = false;
+        state.admin.reminder.add.response.toastMsg = "";
+      })
+      .addCase(createReminder.fulfilled, (state, action) => {
+        state.admin.reminder.add.response.isLoading = false;
+        state.admin.reminder.add.response.isSuccess = true;
+        state.admin.reminder.add.response.details = action.payload;
+        state.admin.reminder.add.response.toastMsg =
+          "User created successfully!";
+      })
+      .addCase(createReminder.rejected, (state, action) => {
+        state.admin.reminder.add.response.isLoading = false;
+        state.admin.reminder.add.response.isSuccess = false;
+        state.admin.reminder.add.response.toastMsg = "User creation failed.";
+        state.admin.reminder.add.response.error = action.payload as string;
+      })
+      .addCase(retriveReminder.pending, (state) => {
+        state.admin.reminder.view.response.isLoading = true;
+        state.admin.reminder.view.response.error = null;
+      })
+      .addCase(
+        retriveReminder.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.admin.reminder.view.response.isLoading = false;
+          state.admin.reminder.view.response.details = action.payload;
+        }
+      )
+      .addCase(retriveReminder.rejected, (state, action) => {
+        state.admin.reminder.view.response.isLoading = false;
+        state.admin.reminder.view.response.error = action.payload as string;
+      })
+      .addCase(updateReminder.pending, (state) => {
+        state.admin.reminder.edit.response.isLoading = true;
+        state.admin.reminder.edit.response.error = null;
+        state.admin.reminder.add.response.toastMsg = "";
+      })
+      .addCase(updateReminder.fulfilled, (state, action) => {
+        state.admin.reminder.edit.response.isLoading = false;
+        state.admin.reminder.edit.response.isSuccess = true;
+        state.admin.reminder.edit.response.details = action.payload;
+        state.admin.reminder.add.response.toastMsg =
+          "User updated successfully!";
+        state.admin.reminder.edit.response.error = null;
+      })
+      .addCase(updateReminder.rejected, (state, action) => {
+        state.admin.reminder.edit.response.isLoading = false;
+        state.admin.reminder.edit.response.isSuccess = false;
+        state.admin.reminder.edit.response.toastMsg = "User update failed.";
+        state.admin.reminder.edit.response.error = action.payload as string;
+      })
+      // Announcement
+      .addCase(createAnnouncement.pending, (state) => {
+        state.admin.announcement.add.response.isLoading = true;
+        state.admin.announcement.add.response.isSuccess = false;
+        state.admin.announcement.add.response.toastMsg = "";
+      })
+      .addCase(createAnnouncement.fulfilled, (state, action) => {
+        state.admin.announcement.add.response.isLoading = false;
+        state.admin.announcement.add.response.isSuccess = true;
+        state.admin.announcement.add.response.details = action.payload;
+        state.admin.announcement.add.response.toastMsg =
+          "User created successfully!";
+      })
+      .addCase(createAnnouncement.rejected, (state, action) => {
+        state.admin.announcement.add.response.isLoading = false;
+        state.admin.announcement.add.response.isSuccess = false;
+        state.admin.announcement.add.response.toastMsg =
+          "User creation failed.";
+        state.admin.announcement.add.response.error = action.payload as string;
+      })
+      .addCase(retriveAnnouncement.pending, (state) => {
+        state.admin.announcement.view.response.isLoading = true;
+        state.admin.announcement.view.response.error = null;
+      })
+      .addCase(
+        retriveAnnouncement.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.admin.announcement.view.response.isLoading = false;
+          state.admin.announcement.view.response.details = action.payload;
+        }
+      )
+      .addCase(retriveAnnouncement.rejected, (state, action) => {
+        state.admin.announcement.view.response.isLoading = false;
+        state.admin.announcement.view.response.error = action.payload as string;
+      })
+      .addCase(updateAnnouncement.pending, (state) => {
+        state.admin.announcement.edit.response.isLoading = true;
+        state.admin.announcement.edit.response.error = null;
+        state.admin.announcement.add.response.toastMsg = "";
+      })
+      .addCase(updateAnnouncement.fulfilled, (state, action) => {
+        state.admin.announcement.edit.response.isLoading = false;
+        state.admin.announcement.edit.response.isSuccess = true;
+        state.admin.announcement.edit.response.details = action.payload;
+        state.admin.announcement.add.response.toastMsg =
+          "User updated successfully!";
+        state.admin.reminder.edit.response.error = null;
+      })
+      .addCase(updateAnnouncement.rejected, (state, action) => {
+        state.admin.announcement.edit.response.isLoading = false;
+        state.admin.announcement.edit.response.isSuccess = false;
+        state.admin.announcement.edit.response.toastMsg = "User update failed.";
+        state.admin.announcement.edit.response.error = action.payload as string;
       });
   },
 });

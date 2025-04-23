@@ -4,6 +4,7 @@ import { DateInput, TimeInput } from "./dayinput";
 import { formDivCss, formErrorCss, formLabelCss } from "./props";
 import { getFormErrorMsg } from "@/utils/utils";
 import { InputSchema } from "@/schemas/schema";
+import dayjs from "dayjs";
 
 type CheckboxOption = {
   label: string;
@@ -55,12 +56,15 @@ export const CheckboxWithSchedule = ({
     setValue(input, mapped);
 
     if (selected.includes("schedule")) {
+      // Store date as ISO (if you want), and time as local string
+      const formattedTime = dayjs(scheduleTime).format("HH:mm"); // '14:30'
+
       setValue(scheduleField, {
         date: scheduleDate,
-        time: scheduleTime,
+        time: formattedTime,
       });
     } else {
-      setValue(scheduleField, null);
+      setValue(scheduleField, "");
     }
   }, [selected, scheduleDate, scheduleTime, input, scheduleField, setValue]);
 
@@ -131,7 +135,18 @@ export const CheckboxWithSchedule = ({
             form={form}
             css={{}}
             actions={{
-              handleOnChange: (val: any) => setScheduleTime(val),
+              handleOnChange: (val: any) => {
+                const time =
+                  typeof val === "string" ? dayjs(val, "HH:mm") : dayjs(val);
+
+                const todayWithTime = dayjs()
+                  .hour(time.hour())
+                  .minute(time.minute())
+                  .second(0)
+                  .millisecond(0);
+
+                setScheduleTime(todayWithTime.format("HH:mm:ss"));
+              },
             }}
           />
         </div>

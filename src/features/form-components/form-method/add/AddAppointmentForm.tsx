@@ -70,7 +70,7 @@ const AddAppointmentForm = () => {
       userId: data.createdById,
     };
     console.log(updatedData, "transformedData");
-    dispatch(createAppointment(data));
+    dispatch(createAppointment(updatedData));
     reset();
     dispatch(setAddAppointmentFormTrue(false));
     dispatch(retriveAppointment());

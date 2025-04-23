@@ -6,7 +6,7 @@ import {
   adminServiceSchema,
   adminUserSchema,
 } from "@/schemas/validation/validationSchema";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -47,6 +47,8 @@ import { IdCard } from "lucide-react";
 import ServiceForm from "../../forms/admin/ServiceForm";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import { ServiceAvailability } from "../../../service/types/types";
+import { Availability } from "../../../individual-event/types/types";
+import { BusinessAvailability } from "../../../business-detail/types/types";
 import {
   formContainerCss,
   formSubTitleCss,
@@ -66,11 +68,12 @@ const EditServiceForm = () => {
   const { id: serviceId } = useAppSelector(
     (state: RootState) => state.admin.platform.service._edit_ServiceForm
   );
-
+  const [availaibility, setAvailability] = useState("default");
   const { details } = useAppSelector(
     (state: RootState) => state.admin.admin.service.view.response
   );
   const dataToEdit = details?.find((u: any) => u.id === serviceId);
+  console.log(availaibility, "availability");
 
   // Submit handler
   const onSubmit = (data: any) => {
@@ -86,19 +89,18 @@ const EditServiceForm = () => {
       status: data?.availabilities ? "ACTIVE" : "INACTIVE",
       businessDetailId: data.businessDetailId ?? "cm9gvwy4s0003vdg0f24wf178",
 
-      serviceHourDay: data.serviceHourDay?.map((day: any) => ({
+      serviceAvailability: data.serviceHourDay?.map((day: any) => ({
         weekDay: day.weekDay,
         timeSlots: day.timeSlots?.map((slot: any) => ({
-          id: slot.id, // Include if editing existing slot
-          startTime: `${today}T${slot.startTime}:00`,
+          startTime: `${today}T${slot.startTime}:000Z`,
           endTime: `${today}T${slot.endTime}:00`,
         })),
       })),
     };
+    console.log(data.serviceAvailability, "edited Service Availability");
+    // console.log(parsedData, "parsedData to send");
 
-    console.log(parsedData, "parsedData to send");
-
-    dispatch(updateService(parsedData));
+    // dispatch(updateService(parsedData));
     reset();
     dispatch(setEditServiceFormTrue(false));
   };
@@ -158,18 +160,26 @@ const EditServiceForm = () => {
   const availabilityDefaultValue =
     dataToEdit?.status === "ACTIVE" ? true : false;
 
-  const transformAvailability = (apiData: any[]): ServiceAvailability[] => {
-    return apiData?.map((entry) => ({
+  const transformAvailability = (apiData: any) => {
+    const formatTime = (dateStr: string) => {
+      const date = new Date(dateStr);
+      return isNaN(date.getTime()) ? "" : date.toISOString().substring(11, 16);
+    };
+
+    return apiData?.map((entry: any) => ({
       weekDay: entry.weekDay,
-      timeSlots: entry.timeSlots.map(
-        (slot: { id: string; startTime: string; endTime: string }) => ({
-          id: slot.id,
-          startTime: new Date(slot.startTime).toISOString().substring(11, 16), // format to HH:mm
-          endTime: new Date(slot.endTime).toISOString().substring(11, 16), // format to HH:mm
-        })
-      ),
+      timeSlots: (entry.timeSlots ?? []).map((slot: any) => ({
+        id: slot.id,
+        startTime: formatTime(slot.startTime),
+        endTime: formatTime(slot.endTime),
+      })),
     }));
   };
+  const defaultAvailaibiltyDefaultValue = transformAvailability(
+    dataToEdit?.BusinessDetail?.businessAvailability
+  );
+  console.log(dataToEdit, "dataToEdit");
+  console.log(defaultAvailaibiltyDefaultValue, "Availability");
 
   const remaining = { actions: commonActions, form, css: {} };
 
@@ -254,7 +264,7 @@ const EditServiceForm = () => {
         input: "serviceHourDay",
         label: "Service Hour / Day",
         showImportant: true,
-        defaultValue: transformAvailability(dataToEdit?.serviceAvailability),
+        defaultValue: defaultAvailaibiltyDefaultValue,
       }),
       options,
       ...remaining,
@@ -332,7 +342,12 @@ const EditServiceForm = () => {
                 <CloseIcon />
               </div>
             </div>
-            <ServiceForm formObj={formObj} form={form} />
+            <ServiceForm
+              formObj={formObj}
+              form={form}
+              availability={availaibility}
+              setAvailability={setAvailability}
+            />
           </motion.div>
         </CenterSection>
       )}
