@@ -4,6 +4,7 @@ import { User, Role } from "@/features/user/types/types"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { getUserByEmail, getUserById } from "@/db/user"
+import * as bcrypt from "bcryptjs"
 
 // let users: User[] = [
 //   {
@@ -36,12 +37,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // TODO: Hash password here (e.g., await bcrypt.hash(password, 10))
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10)
 
     const newUser = await prisma.user.create({
       data: {
         email,
-        password, // Replace with hashedPassword later
+        password: hashedPassword, 
         name,
         phone,
         address: address ? { create: { ...address } } : undefined,
